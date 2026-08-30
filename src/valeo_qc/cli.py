@@ -78,11 +78,42 @@ def _cmd_prepare(args: argparse.Namespace) -> None:
         raise SystemExit(1)
 
 
+def _cmd_eval_classifier(args: argparse.Namespace) -> None:
+    """Évalue le checkpoint officiel et journalise dans MLflow."""
+    from valeo_qc.classifier import evaluate_official
+
+    metrics = evaluate_official(batch_size=args.batch_size)
+    print(
+        f"officiel val n={metrics['n']} "
+        f"acc={metrics['accuracy']:.4f} macro_f1={metrics['macro_f1']:.4f}"
+    )
+    for class_id, rec in metrics["recall"].items():
+        print(f"  recall {class_id}: {rec:.4f}")
+
+
+def _cmd_train_classifier(args: argparse.Namespace) -> None:
+    """Entraîne le classifieur avec suivi MLflow."""
+    from valeo_qc.classifier import train_classifier
+
+    best = train_classifier(
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        lr=args.lr,
+        seed=args.seed,
+        pretrained=not args.no_pretrained,
+    )
+    print(
+        f"meilleur epoch {best['epoch']} "
+        f"acc={best['accuracy']:.4f} macro_f1={best['macro_f1']:.4f} "
+        f"-> {best['checkpoint']}"
+    )
+
+
 def main() -> None:
     """Point d'entrée principal du CLI."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser(
-        description="Contrôle qualité Valeo — split et prétraitement"
+        description="Contrôle qualité Valeo — prétraitement et classifieur"
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -125,6 +156,28 @@ def main() -> None:
         help="threads pour le crop (défaut : 4)",
     )
     prep_p.set_defaults(func=_cmd_prepare)
+
+    eval_p = sub.add_parser(
+        "eval-classifier",
+        help="évalue Classifier.pt officiel sur le split val (MLflow)",
+    )
+    eval_p.add_argument("--batch-size", type=int, default=16)
+    eval_p.set_defaults(func=_cmd_eval_classifier)
+
+    train_p = sub.add_parser(
+        "train-classifier",
+        help="entraîne resnest50d + poids de classes, journal MLflow",
+    )
+    train_p.add_argument("--epochs", type=int, default=15)
+    train_p.add_argument("--batch-size", type=int, default=16)
+    train_p.add_argument("--lr", type=float, default=1e-4)
+    train_p.add_argument("--seed", type=int, default=42)
+    train_p.add_argument(
+        "--no-pretrained",
+        action="store_true",
+        help="ne pas partir des poids ImageNet",
+    )
+    train_p.set_defaults(func=_cmd_train_classifier)
 
     args = parser.parse_args()
     args.func(args)
