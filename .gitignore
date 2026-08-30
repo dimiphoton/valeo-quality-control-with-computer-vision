@@ -5,15 +5,15 @@ venv/
 .env
 .ipynb_checkpoints/
 .pytest_cache/
+*.egg-info/
 .DS_Store
 
 # Coupe / pause de l'autopilot Cursor (local, ne pas committer)
 .cursor/autopilot.off
 .cursor/autopilot.pause
 
-# Données brutes : pas de commit (taille/licence), on garde juste la structure
-data/raw/*
-!data/raw/.gitkeep
+# Données du challenge (taille, licence) : rien de data/ dans git
+/data/
 
 # Décommente si les modèles deviennent trop volumineux pour git classique
 # models/*.pkl

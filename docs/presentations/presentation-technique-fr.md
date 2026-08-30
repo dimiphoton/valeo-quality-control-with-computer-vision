@@ -10,12 +10,12 @@ paginate: true
 <!-- Photo : pictures/presentations/photos/hero.png -->
 <!-- ![bg brightness:0.40](../../pictures/presentations/photos/hero.png) -->
 
-# [Question de recherche]
-# en une assertion
+# Classer les défauts connus
+# et détecter le drift, au coût métier
 
-[Métier] · [Domaine] · [Stack]
+Machine learning · Industrie / contrôle qualité · Python / PyTorch / ONNX / AWS
 
-Wallonie · période · grain des données
+Valeo · ENS #157 · 8 278 images train
 
 ---
 

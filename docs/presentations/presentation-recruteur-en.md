@@ -10,13 +10,13 @@ paginate: true
 <!-- Photo: pictures/presentations/photos/hero.png -->
 <!-- ![bg brightness:0.40](../../pictures/presentations/photos/hero.png) -->
 
-# [Human question]
-# on two or three
-# lines?
+# Can a camera miss
+# fewer parts without
+# letting unknowns through?
 
-[Role] · [Domain] · [Stack]
+Machine learning · Industry / quality control · Python / PyTorch / ONNX / AWS
 
-Wallonia · period
+Valeo · Challenge Data ENS #157
 
 ---
 
