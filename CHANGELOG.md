@@ -2,6 +2,9 @@
 
 ## [Non publié]
 
+- PaDiM : reproduction du pickle officiel (WRN-50-2, pas anomalib) et
+  réentraînement sur le split train. Val : scores bruts moyens 144
+  (officiel) / 148 (nôtre) ; Missing reste la classe la plus « in-distribution ».
 - Baseline classifieur : le checkpoint officiel est un **resnest50d**
   (val acc 99,8 %, F1 macro 0,973). Réentraînement 15 époques + poids
   de classes (meilleur F1 0,960 à l'époque 4). Journal MLflow (SQLite).

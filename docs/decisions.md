@@ -11,3 +11,5 @@
 | 2026-08-30 | Architecture **resnest50d** (timm), comme le pickle officiel | ResNet50 du brief initial | `Classifier.pt` est un ResNeSt-50d, epoch 15. Recalibrer le brief aurait été un faux benchmark. |
 | 2026-08-30 | MLflow 3 en **SQLite locale** (`mlflow.db`) | Store `./mlruns` fichier | MLflow 3 refuse le file store par défaut. SQLite reste local, sans serveur. |
 | 2026-08-30 | Pas de normalise ImageNet à l'entrée du classifieur | mean/std ImageNet | Le notebook officiel ne fait que `Resize(224)+ToTensor`. On aligne l'éval. |
+| 2026-08-30 | PaDiM **sans anomalib**, copie du notebook (WRN-50-2, seed 1024) | Installer anomalib | Le pickle officiel n'est pas un checkpoint anomalib ; même geste que pour ``resnest50d``. |
+| 2026-08-30 | Fit PaDiM sur **toutes** les classes du split train + ridge 0,01 | GOOD only, LedoitWolf | Le pickle officiel a des scores Missing ≪ GOOD : le Gaussian est dominé par la classe majoritaire. LedoitWolf exigerait ~15 Go d'embeddings. |

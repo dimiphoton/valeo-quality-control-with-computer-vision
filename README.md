@@ -71,7 +71,18 @@ stratified val split (1,655 images, no `drift`):
 | Ours (15 epochs, class weights) | 99.5 % | 0.960 (best epoch 4) |
 
 The rare class `Boucle plate` is the weak spot (recall 0.86 on both).
-PaDiM, the cost-calibrated decision, ONNX, and the Lambda API come next
+
+PaDiM (WideResNet-50-2, 128 px, 550 dims) scores the val split without
+`drift`. Image-level scores are min-max scaled on the scored set
+(as in the official notebook). Raw Mahalanobis means:
+
+| Model | Overall | Missing | GOOD | frac > 0.5 |
+|---|---|---|---|---|
+| Official `PADIM.pkl` | 144 | 102 | 262 | 3.4 % |
+| Ours (train split, ridge 0.01) | 148 | 104 | 273 | 2.2 % |
+
+The Gaussian is dominated by **Missing** (~78 % of train), not by GOOD.
+Cost-threshold calibration, ONNX, and the Lambda API come next
 (see `ROADMAP.md`).
 
 ## Reproduce
@@ -82,20 +93,22 @@ pytest
 python -m valeo_qc.cli prepare
 python -m valeo_qc.cli eval-classifier
 python -m valeo_qc.cli train-classifier
+python -m valeo_qc.cli eval-padim
+python -m valeo_qc.cli train-padim
 mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
 `prepare` writes cropped PNGs to `data/processed/` (never overwrites
-`data/raw/`). `eval-classifier` scores the official checkpoint on val.
-`train-classifier` fine-tunes the same architecture with class weights
-and logs to local MLflow (SQLite). Re-runs of `prepare` skip existing
-crops (`--overwrite` to force).
+`data/raw/`). `eval-classifier` / `eval-padim` score the official
+checkpoints on val. `train-classifier` and `train-padim` log to local
+MLflow (SQLite). Re-runs of `prepare` skip existing crops (`--overwrite`
+to force).
 
 ## Repo structure
 
 ```
 brief/                 # identity, objective, original briefs (French)
-src/valeo_qc/          # preprocessing, decision logic, later training
+src/valeo_qc/          # preprocessing, decision logic, classifier, PaDiM
 tests/
 docs/presentations/    # Marp sources (recruiter + technical, FR/EN)
 ```

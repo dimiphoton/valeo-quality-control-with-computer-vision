@@ -1,5 +1,16 @@
 # Journal de développement
 
+## 2026-08-30 — Détecteur PaDiM
+
+- Pas d'anomalib : le notebook officiel est un PaDiM maison (WideResNet-50-2,
+  128 px, d=550, seed 1024). ``PADIM.pkl`` = moyenne + cov (550, 550, 1024).
+- Officiel sur val (1 655, pas de drift) : score brut moyen 144, p95 379.
+  **Missing** ~102, **GOOD** ~262 — le Gaussian est calé sur la classe
+  majoritaire, pas sur les pièces saines.
+- Réentraînement sur le split train (ridge 0,01, GTX 980 Ti) : même
+  classement des classes, raw_mean 148. Checkpoint ``models/padim-best.pkl``.
+- MLflow : expérience `valeo-qc-padim`.
+
 ## 2026-08-30 — Baseline classifieur
 
 - `Classifier.pt` officiel = timm **resnest50d** (pas ResNet50), 15 époques.
