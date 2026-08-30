@@ -17,16 +17,16 @@ par champ. L'agent propose, l'utilisateur valide.
 
 | Champ | Valeur (FR) | Valeur (EN, pour le README) |
 |---|---|---|
-| **Métier** | _à valider_ | _à valider_ |
-| **Domaine** | _à valider_ | _à valider_ |
-| **Stack courte** | _ex. Python / DuckDB / Streamlit_ (4 outils max) | idem |
-| **Ligne identité** | `_Métier_ · _Domaine_ · _Stack courte_` | `_Role_ · _Domain_ · _Stack_` |
-| **Topics GitHub** | _5 tags max, voir table plus bas_ | |
-| **About GitHub** | _la ligne identité EN, ≤ 80 caractères_ | |
+| **Métier** | Machine learning | Machine learning |
+| **Domaine** | Industrie / contrôle qualité | Industry / quality control |
+| **Stack courte** | Python / PyTorch / ONNX / AWS | Python / PyTorch / ONNX / AWS |
+| **Ligne identité** | `Machine learning · Industrie / contrôle qualité · Python / PyTorch / ONNX / AWS` | `Machine learning · Industry / quality control · Python / PyTorch / ONNX / AWS` |
+| **Topics GitHub** | `machine-learning`, `computer-vision`, `python`, `pytorch`, `quality-control` | |
+| **About GitHub** | `Machine learning · Industry · Python / PyTorch / ONNX / AWS` | |
 
 Période / maille des données (pour la cover, en plus de la ligne) :
 
-- _ex. Wallonie · 2000–2024_
+- Valeo · Challenge Data ENS #157 · 8 278 images train
 
 Une fois validé : recopier dans le tableau du `README.md`, sur la cover
 des 4 présentations, puis `gh repo edit` (description + topics) si le

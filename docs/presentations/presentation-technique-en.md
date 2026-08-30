@@ -10,12 +10,12 @@ paginate: true
 <!-- Photo: pictures/presentations/photos/hero.png -->
 <!-- ![bg brightness:0.40](../../pictures/presentations/photos/hero.png) -->
 
-# [Research question]
-# as one assertion
+# Classify known defects and
+# detect drift, at business cost
 
-[Role] · [Domain] · [Stack]
+Machine learning · Industry / quality control · Python / PyTorch / ONNX / AWS
 
-Wallonia · period · data grain
+Valeo · ENS #157 · 8,278 training images
 
 ---
 

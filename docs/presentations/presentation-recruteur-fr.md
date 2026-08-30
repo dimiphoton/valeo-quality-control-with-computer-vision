@@ -10,13 +10,13 @@ paginate: true
 <!-- Photo : pictures/presentations/photos/hero.png -->
 <!-- ![bg brightness:0.40](../../pictures/presentations/photos/hero.png) -->
 
-# [Question humaine]
-# sur deux ou trois
-# lignes ?
+# Une caméra peut-elle
+# rater moins de pièces
+# sans laisser passer l'inconnu ?
 
-[Métier] · [Domaine] · [Stack]
+Machine learning · Industrie / contrôle qualité · Python / PyTorch / ONNX / AWS
 
-Wallonie · période
+Valeo · Challenge Data ENS #157
 
 ---
 

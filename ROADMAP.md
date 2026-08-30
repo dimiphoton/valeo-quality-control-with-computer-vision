@@ -1,9 +1,14 @@
 # Roadmap
 
-À définir avec l'utilisateur au lancement du projet : domaine (ML / BI /
-géospatial / data engineering) et objectif final (webapp, statique, Kaggle,
-dashboard...).
+Classer les défauts Valeo et détecter le `drift`, en calant la décision
+sur la matrice de coût du challenge, puis exposer une API d'inférence.
 
-- [ ] Étape 1 — à définir
-- [ ] Étape 2 — à définir
-- [ ] Étape 3 — à définir
+- [x] Cadrage — identité, README, structure `src/valeo_qc`, logique de décision testée
+- [ ] Préparation des images — split stratifié, poids de classes, `rotate_and_crop` vers `data/processed/`
+- [ ] Baseline classifieur (reproduire `Classifier.pt`) + journal d'expériences
+- [ ] Détecteur d'anomalie PaDiM (reproduire le pickle officiel, puis réentraîner)
+- [ ] Calibration du seuil sur le coût métier + comparaison chiffrée au benchmark
+- [ ] Export ONNX
+- [ ] API Lambda locale (handler + image Docker)
+- [ ] Déploiement AWS (alarme CloudWatch d'abord)
+- [ ] Présentations recruteur / technique FR+EN
