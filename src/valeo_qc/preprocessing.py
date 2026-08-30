@@ -7,13 +7,19 @@ Les chemins pointent vers ``data/raw/`` (jamais modifié) et
 
 from __future__ import annotations
 
+import json
+import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 from PIL import Image
 
-from valeo_qc.decision_logic import encode_label
+from valeo_qc.decision_logic import ID_TO_LABEL, encode_label
+
+LOGGER = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
@@ -22,6 +28,9 @@ TRAIN_IMAGES_DIR = RAW_DIR / "input_train"
 TEST_IMAGES_DIR = RAW_DIR / "input_test_1a4aqAg" / "input_test"
 TRAIN_LABELS_CSV = RAW_DIR / "Y_train_eVW9jym.csv"
 SUBMISSION_EXAMPLE_CSV = RAW_DIR / "Y_random_nKwalR1.csv"
+TEST_META_CSV = RAW_DIR / "Supp_files" / "win_and_lib.csv"
+SPLIT_CSV_NAME = "split.csv"
+WEIGHTS_JSON_NAME = "class_weights.json"
 
 # Angle (degrés, antihoraire) et crop PIL (left, upper, right, lower).
 ROT_CROP: dict[str, tuple[float, tuple[int, int, int, int]]] = {
@@ -158,3 +167,228 @@ def rotate_and_crop(
         cropped = rotated.crop(crop_box)
         cropped.save(dest, format="PNG")
     return dest
+
+
+def load_test_meta(csv_path: Path | None = None) -> pd.DataFrame:
+    """Charge les métadonnées test (filename, window, lib), sans labels.
+
+    Parameters
+    ----------
+    csv_path
+        CSV officiel ``win_and_lib.csv``. Défaut : :data:`TEST_META_CSV`.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Colonnes ``filename``, ``window``, ``lib``.
+    """
+    path = TEST_META_CSV if csv_path is None else Path(csv_path)
+    return pd.read_csv(path)
+
+
+def _crop_one(
+    filename: str,
+    lib: str,
+    source_dir: Path,
+    dest_dir: Path,
+    overwrite: bool,
+) -> str:
+    """Recadre un fichier. Retourne ``written``, ``skipped`` ou ``missing``."""
+    dest = dest_dir / filename
+    if dest.is_file() and not overwrite:
+        return "skipped"
+    source = source_dir / filename
+    if not source.is_file():
+        return "missing"
+    rotate_and_crop(source, dest, lib=lib)
+    return "written"
+
+
+def crop_frame(
+    frame: pd.DataFrame,
+    source_dir: Path,
+    dest_dir: Path,
+    *,
+    overwrite: bool = False,
+    workers: int = 1,
+    filename_col: str = "filename",
+    lib_col: str = "lib",
+) -> dict[str, Any]:
+    """Recadre toutes les images d'un tableau vers ``dest_dir``.
+
+    Les PNG déjà présents sont sautés sauf si ``overwrite`` est vrai.
+    Les sources absentes sont listées, jamais créées à partir de rien.
+
+    Parameters
+    ----------
+    frame
+        Table avec au moins ``filename`` et ``lib``.
+    source_dir
+        Dossier des PNG bruts (``data/raw/...``).
+    dest_dir
+        Dossier de sortie (``data/processed/train`` ou ``test``).
+    overwrite
+        Réécrire les PNG déjà recadrés.
+    workers
+        Nombre de threads. ``1`` = séquentiel (défaut des tests).
+    filename_col, lib_col
+        Noms de colonnes.
+
+    Returns
+    -------
+    dict
+        Compteurs ``written``, ``skipped``, ``missing`` (liste de noms).
+    """
+    dest_dir = Path(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    source_dir = Path(source_dir)
+    rows = list(zip(frame[filename_col].astype(str), frame[lib_col].astype(str), strict=True))
+    counts = {"written": 0, "skipped": 0, "missing": []}
+
+    def _run(filename: str, lib: str) -> tuple[str, str]:
+        return filename, _crop_one(filename, lib, source_dir, dest_dir, overwrite)
+
+    if workers <= 1:
+        results = [_run(name, lib) for name, lib in rows]
+    else:
+        # Threads : chaque PNG va dans un fichier distinct, pas de partage d'état.
+        results = []
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = [pool.submit(_run, name, lib) for name, lib in rows]
+            for future in as_completed(futures):
+                results.append(future.result())
+
+    for filename, status in results:
+        if status == "missing":
+            counts["missing"].append(filename)
+        else:
+            counts[status] += 1
+        done = counts["written"] + counts["skipped"] + len(counts["missing"])
+        if done % 500 == 0:
+            LOGGER.info("crop %s/%s -> %s", done, len(rows), dest_dir.name)
+    return counts
+
+
+def save_class_weights(
+    weights: dict[int, float],
+    path: Path,
+    *,
+    n_train: int,
+    seed: int,
+    val_fraction: float,
+) -> Path:
+    """Écrit les poids de classes (calculés sur le split train) en JSON.
+
+    Parameters
+    ----------
+    weights
+        Poids par ``label_id`` (0–5).
+    path
+        Fichier de sortie.
+    n_train, seed, val_fraction
+        Métadonnées du split, pour retracer le calcul.
+
+    Returns
+    -------
+    pathlib.Path
+        Chemin écrit.
+    """
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "computed_on": "train_split",
+        "n_train": int(n_train),
+        "seed": int(seed),
+        "val_fraction": float(val_fraction),
+        "weights": {str(k): v for k, v in sorted(weights.items())},
+        "labels": {str(k): ID_TO_LABEL[k] for k in sorted(weights)},
+    }
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return path
+
+
+def prepare_dataset(
+    *,
+    labels_csv: Path | None = None,
+    train_images_dir: Path | None = None,
+    test_images_dir: Path | None = None,
+    test_meta_csv: Path | None = None,
+    processed_dir: Path | None = None,
+    val_fraction: float = 0.2,
+    seed: int = 42,
+    overwrite: bool = False,
+    crop_test: bool = True,
+    workers: int = 1,
+) -> dict[str, Any]:
+    """Split stratifié, poids de classes, rotate-and-crop vers ``processed/``.
+
+    Les poids sont calculés **sur le split train seulement** (pas de fuite
+    vers la validation). ``raw/`` n'est jamais modifié.
+
+    Parameters
+    ----------
+    labels_csv, train_images_dir, test_images_dir, test_meta_csv, processed_dir
+        Chemins. Défaut : constantes du module (données du challenge).
+    val_fraction, seed
+        Paramètres du split.
+    overwrite
+        Réécrire les PNG déjà présents dans ``processed/``.
+    crop_test
+        Recadrer aussi les images test (``lib`` lu dans ``win_and_lib.csv``).
+    workers
+        Threads pour le crop.
+
+    Returns
+    -------
+    dict
+        Chemins écrits, effectifs du split, compteurs de crop.
+    """
+    processed = PROCESSED_DIR if processed_dir is None else Path(processed_dir)
+    processed.mkdir(parents=True, exist_ok=True)
+    labels = load_train_labels(labels_csv)
+    train, val = stratified_split(labels, val_fraction=val_fraction, seed=seed)
+    train = train.assign(split="train")
+    val = val.assign(split="val")
+    split = pd.concat([train, val], ignore_index=True)
+    split_path = processed / SPLIT_CSV_NAME
+    split.to_csv(split_path, index=False)
+
+    weights = class_weights(train["label_id"])
+    weights_path = save_class_weights(
+        weights,
+        processed / WEIGHTS_JSON_NAME,
+        n_train=len(train),
+        seed=seed,
+        val_fraction=val_fraction,
+    )
+
+    src_train = TRAIN_IMAGES_DIR if train_images_dir is None else Path(train_images_dir)
+    train_crop = crop_frame(
+        labels,
+        src_train,
+        processed / "train",
+        overwrite=overwrite,
+        workers=workers,
+    )
+
+    test_crop: dict[str, Any] | None = None
+    if crop_test:
+        meta_path = TEST_META_CSV if test_meta_csv is None else Path(test_meta_csv)
+        src_test = TEST_IMAGES_DIR if test_images_dir is None else Path(test_images_dir)
+        test_meta = load_test_meta(meta_path)
+        test_crop = crop_frame(
+            test_meta,
+            src_test,
+            processed / "test",
+            overwrite=overwrite,
+            workers=workers,
+        )
+
+    return {
+        "split_path": split_path,
+        "weights_path": weights_path,
+        "n_train": len(train),
+        "n_val": len(val),
+        "train_crop": train_crop,
+        "test_crop": test_crop,
+    }

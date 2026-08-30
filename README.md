@@ -49,22 +49,35 @@ Train labels are strings (`GOOD`, `Missing`, …). Submissions use integers
 (`GOOD=0` … `Drift=6`). Test labels are hidden: score via the platform
 (2 submissions / 24 h).
 
+After `python -m valeo_qc.cli prepare` (idempotent, skips existing crops):
+
+```
+data/processed/
+  train/                 # 8,278 cropped PNG (same filenames)
+  test/                  # 1,055 cropped PNG
+  split.csv              # train/val 80/20, stratified on Label
+  class_weights.json     # inverse-frequency weights on the train split only
+```
+
 ## Result
 
-Not yet: this kickoff only pins identity, the cost matrix, and a tested
-decision rule. Classifier, PaDiM, and the Lambda API come next
-(see `ROADMAP.md`).
+Images are rotated and cropped into `data/processed/` (never overwriting
+`data/raw/`). A stratified 80/20 train/val split and class weights
+(computed on the train split only, given the ~91:1 imbalance) are ready
+for the classifier baseline. PaDiM, the cost-calibrated decision, ONNX
+export, and the Lambda API come next (see `ROADMAP.md`).
 
 ## Reproduce
 
 ```bash
 python -m pip install -e ".[dev]"
 pytest
-python -m valeo_qc.cli --help
+python -m valeo_qc.cli prepare
 ```
 
-`rotate_and_crop` must write to `data/processed/`, never overwrite
-`data/raw/`.
+`prepare` writes the stratified split, class weights, and cropped PNGs
+to `data/processed/`. It never overwrites `data/raw/`. Re-runs skip
+crops that already exist (`--overwrite` to force).
 
 ## Repo structure
 

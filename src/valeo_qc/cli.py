@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import logging
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -11,6 +13,7 @@ from valeo_qc.preprocessing import (
     PROCESSED_DIR,
     TRAIN_IMAGES_DIR,
     load_train_labels,
+    prepare_dataset,
     rotate_and_crop,
     stratified_split,
 )
@@ -40,8 +43,44 @@ def _cmd_crop(args: argparse.Namespace) -> None:
     print(written)
 
 
+def _fmt_crop(name: str, stats: dict | None) -> str:
+    """Résumé d'un passage crop pour le terminal."""
+    if stats is None:
+        return f"{name}: ignoré"
+    n_missing = len(stats["missing"])
+    return (
+        f"{name}: {stats['written']} écrits, {stats['skipped']} déjà là, "
+        f"{n_missing} manquants"
+    )
+
+
+def _cmd_prepare(args: argparse.Namespace) -> None:
+    """Split, poids de classes, rotate-and-crop vers processed/."""
+    summary = prepare_dataset(
+        val_fraction=args.val_fraction,
+        seed=args.seed,
+        overwrite=args.overwrite,
+        crop_test=not args.skip_test,
+        workers=args.workers,
+    )
+    print(
+        f"split {summary['split_path']} "
+        f"({summary['n_train']} train, {summary['n_val']} val)"
+    )
+    print(f"poids {summary['weights_path']}")
+    print(_fmt_crop("train", summary["train_crop"]))
+    print(_fmt_crop("test", summary["test_crop"]))
+    missing = list(summary["train_crop"]["missing"])
+    if summary["test_crop"] is not None:
+        missing.extend(summary["test_crop"]["missing"])
+    if missing:
+        print(f"fichiers bruts introuvables ({len(missing)}) : {missing[:5]}", file=sys.stderr)
+        raise SystemExit(1)
+
+
 def main() -> None:
     """Point d'entrée principal du CLI."""
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser(
         description="Contrôle qualité Valeo — split et prétraitement"
     )
@@ -62,6 +101,30 @@ def main() -> None:
     crop_p.add_argument("--lib", default=None, help="Die01–Die04 (sinon lu dans Y_train)")
     crop_p.add_argument("--output", default=None, help="PNG de sortie")
     crop_p.set_defaults(func=_cmd_crop)
+
+    prep_p = sub.add_parser(
+        "prepare",
+        help="split + poids + rotate-and-crop de tout le jeu vers processed/",
+    )
+    prep_p.add_argument("--val-fraction", type=float, default=0.2)
+    prep_p.add_argument("--seed", type=int, default=42)
+    prep_p.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="réécrire les PNG déjà recadrés",
+    )
+    prep_p.add_argument(
+        "--skip-test",
+        action="store_true",
+        help="ne pas recadrer les images test",
+    )
+    prep_p.add_argument(
+        "--workers",
+        type=int,
+        default=4,
+        help="threads pour le crop (défaut : 4)",
+    )
+    prep_p.set_defaults(func=_cmd_prepare)
 
     args = parser.parse_args()
     args.func(args)

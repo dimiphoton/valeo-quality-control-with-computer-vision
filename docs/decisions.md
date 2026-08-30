@@ -7,3 +7,4 @@
 | 2026-08-30 | Matrice de coût et PWA copiées du notebook officiel | Transcrire l'image du site | Le notebook `Supp_files/Notebook_ENS.ipynb` contient la matrice exploitable. |
 | 2026-08-30 | `rotate_and_crop` écrit dans `data/processed/`, jamais dans `raw/` | Script officiel qui écrase la source | Les bruts du challenge ne doivent pas être mutés. |
 | 2026-08-30 | Numpy / pandas / Pillow maintenant ; PyTorch, MLflow, anomalib plus tard | Tout installer au cadrage | La règle persona demande un go avant ces outils. |
+| 2026-08-30 | Poids de classes calculés sur le **split train** seulement | Poids sur tout `Y_train` | Évite une fuite d'information vers la validation ; le val sert au seuil et à la comparaison. |
