@@ -12,7 +12,7 @@
   - données non republicables — rien sous `data/` dans git ;
   - labels de test cachés (évaluation par soumission, 2 / 24 h) ;
   - AWS free tier, alarme de facturation **avant** tout déploiement ;
-  - PyTorch, MLflow, anomalib et AWS SAM à valider avant installation
-    (hors numpy / pandas / Pillow déjà posés pour le cadrage).
+  - PyTorch, MLflow et timm installés pour la baseline classifieur
+    (anomalib et AWS SAM restent à valider avant installation).
 
 Métier, domaine et stack se remplissent dans `brief/identite.md`.

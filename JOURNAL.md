@@ -1,5 +1,15 @@
 # Journal de développement
 
+## 2026-08-30 — Baseline classifieur
+
+- `Classifier.pt` officiel = timm **resnest50d** (pas ResNet50), 15 époques.
+  Val (1 655 images, pas de drift) : acc 99,8 %, F1 macro 0,973. Rappel
+  `Boucle plate` 0,86 — le point faible.
+- Réentraînement local (poids de classes, ImageNet, 15 époques, GTX 980 Ti) :
+  meilleur F1 0,960 à l'époque 4. On garde l'officiel comme référence.
+- MLflow en SQLite (`mlflow.db`) : expérience `valeo-qc-classifier`.
+  PyTorch + timm + MLflow installés.
+
 ## 2026-08-30 — Préparation des images
 
 - Split stratifié 80/20 (6 623 train / 1 655 val), toutes les classes

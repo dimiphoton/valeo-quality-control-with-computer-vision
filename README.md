@@ -61,11 +61,18 @@ data/processed/
 
 ## Result
 
-Images are rotated and cropped into `data/processed/` (never overwriting
-`data/raw/`). A stratified 80/20 train/val split and class weights
-(computed on the train split only, given the ~91:1 imbalance) are ready
-for the classifier baseline. PaDiM, the cost-calibrated decision, ONNX
-export, and the Lambda API come next (see `ROADMAP.md`).
+Images are rotated and cropped into `data/processed/`. The official
+classifier is a **resnest50d** (not ResNet50), evaluated on the
+stratified val split (1,655 images, no `drift`):
+
+| Model | Val accuracy | Macro F1 |
+|---|---|---|
+| Official `Classifier.pt` | 99.8 % | 0.973 |
+| Ours (15 epochs, class weights) | 99.5 % | 0.960 (best epoch 4) |
+
+The rare class `Boucle plate` is the weak spot (recall 0.86 on both).
+PaDiM, the cost-calibrated decision, ONNX, and the Lambda API come next
+(see `ROADMAP.md`).
 
 ## Reproduce
 
@@ -73,11 +80,16 @@ export, and the Lambda API come next (see `ROADMAP.md`).
 python -m pip install -e ".[dev]"
 pytest
 python -m valeo_qc.cli prepare
+python -m valeo_qc.cli eval-classifier
+python -m valeo_qc.cli train-classifier
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
-`prepare` writes the stratified split, class weights, and cropped PNGs
-to `data/processed/`. It never overwrites `data/raw/`. Re-runs skip
-crops that already exist (`--overwrite` to force).
+`prepare` writes cropped PNGs to `data/processed/` (never overwrites
+`data/raw/`). `eval-classifier` scores the official checkpoint on val.
+`train-classifier` fine-tunes the same architecture with class weights
+and logs to local MLflow (SQLite). Re-runs of `prepare` skip existing
+crops (`--overwrite` to force).
 
 ## Repo structure
 
