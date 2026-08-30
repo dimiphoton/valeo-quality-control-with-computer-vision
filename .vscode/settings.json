@@ -1,0 +1,7 @@
+{
+  "markdown.marp.themes": [
+    "./docs/presentations/portfolio.css"
+  ],
+  "markdown.marp.enableHtml": true,
+  "markdown.marp.allowLocalFiles": true
+}

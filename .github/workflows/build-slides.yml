@@ -1,0 +1,45 @@
+name: build-slides
+
+# Régénère automatiquement les présentations HTML (docs/slides/) à partir
+# des sources Marp (docs/presentations/*.md) à chaque push sur main.
+# Nécessite un réglage one-shot dans le repo GitHub avant de fonctionner :
+# Settings → Actions → General → Workflow permissions → "Read and write
+# permissions" (sinon le commit de retour échoue avec une erreur 403).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/presentations/**'
+      - 'pictures/presentations/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build slides with Marp
+        run: npx --yes @marp-team/marp-cli -I docs/presentations/ -o docs/slides/ --allow-local-files --theme-set docs/presentations/portfolio.css
+
+      - name: Commit generated slides
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/slides/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: régénère les slides à partir des sources Marp"
+            git push
+          else
+            echo "Aucun changement dans les slides générées."
+          fi
