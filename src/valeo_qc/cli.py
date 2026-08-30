@@ -109,11 +109,39 @@ def _cmd_train_classifier(args: argparse.Namespace) -> None:
     )
 
 
+def _fmt_padim(summary: dict) -> str:
+    """Résumé une ligne des scores PaDiM."""
+    return (
+        f"n={summary['n']} raw_mean={summary['raw_mean']:.3f} "
+        f"p95={summary['raw_p95']:.3f} frac>0.5={summary['frac_above_0_5']:.3f}"
+    )
+
+
+def _cmd_eval_padim(args: argparse.Namespace) -> None:
+    """Évalue le pickle PaDiM officiel sur le split val."""
+    from valeo_qc.padim import evaluate_official
+
+    summary = evaluate_official(batch_size=args.batch_size)
+    print(f"officiel val {_fmt_padim(summary)}")
+    for name, stats in summary["per_class"].items():
+        print(f"  {name}: raw_mean={stats['raw_mean']:.3f} n={stats['n']}")
+
+
+def _cmd_train_padim(args: argparse.Namespace) -> None:
+    """Fit PaDiM sur le split train, scores val, pickle dans models/."""
+    from valeo_qc.padim import train_padim
+
+    summary = train_padim(batch_size=args.batch_size, seed=args.seed)
+    print(f"notre PaDiM val {_fmt_padim(summary)} -> {summary['checkpoint']}")
+    for name, stats in summary["per_class"].items():
+        print(f"  {name}: raw_mean={stats['raw_mean']:.3f} n={stats['n']}")
+
+
 def main() -> None:
     """Point d'entrée principal du CLI."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser(
-        description="Contrôle qualité Valeo — prétraitement et classifieur"
+        description="Contrôle qualité Valeo — prétraitement, classifieur, PaDiM"
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -178,6 +206,21 @@ def main() -> None:
         help="ne pas partir des poids ImageNet",
     )
     train_p.set_defaults(func=_cmd_train_classifier)
+
+    eval_padim = sub.add_parser(
+        "eval-padim",
+        help="évalue PADIM.pkl officiel sur le split val (MLflow)",
+    )
+    eval_padim.add_argument("--batch-size", type=int, default=16)
+    eval_padim.set_defaults(func=_cmd_eval_padim)
+
+    train_padim_p = sub.add_parser(
+        "train-padim",
+        help="fit PaDiM (WRN-50-2) sur le split train, journal MLflow",
+    )
+    train_padim_p.add_argument("--batch-size", type=int, default=16)
+    train_padim_p.add_argument("--seed", type=int, default=1024)
+    train_padim_p.set_defaults(func=_cmd_train_padim)
 
     args = parser.parse_args()
     args.func(args)
