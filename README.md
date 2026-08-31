@@ -82,8 +82,20 @@ PaDiM (WideResNet-50-2, 128 px, 550 dims) scores the val split without
 | Ours (train split, ridge 0.01) | 148 | 104 | 273 | 2.2 % |
 
 The Gaussian is dominated by **Missing** (~78 % of train), not by GOOD.
-Cost-threshold calibration, ONNX, and the Lambda API come next
-(see `ROADMAP.md`).
+
+Decision rule on val (no `drift` labels — every PaDiM flag is a false
+positive). PWA = 1 − penalty / (n × 10 000):
+
+| Pipeline | Threshold | PWA | False drift (of which GOOD) |
+|---|---|---|---|
+| Official, classifier only | 1.00 | 1.000 | 0 |
+| Official, notebook 0.5 | 0.50 | 0.989 | 57 (13 GOOD) |
+| Official, **protect GOOD** (exported) | 0.611 | 0.999 | 20 (0 GOOD) |
+| Ours, notebook 0.5 | 0.50 | 0.994 | 37 (3 GOOD) |
+
+At 0.5 the official PaDiM pays 13 × 10 000 for GOOD→drift. The exported
+threshold is the lowest that never flags a val GOOD. ONNX and the Lambda
+API come next (see `ROADMAP.md`).
 
 ## Reproduce
 
@@ -95,20 +107,22 @@ python -m valeo_qc.cli eval-classifier
 python -m valeo_qc.cli train-classifier
 python -m valeo_qc.cli eval-padim
 python -m valeo_qc.cli train-padim
+python -m valeo_qc.cli calibrate
 mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
 `prepare` writes cropped PNGs to `data/processed/` (never overwrites
 `data/raw/`). `eval-classifier` / `eval-padim` score the official
 checkpoints on val. `train-classifier` and `train-padim` log to local
-MLflow (SQLite). Re-runs of `prepare` skip existing crops (`--overwrite`
-to force).
+MLflow (SQLite). `calibrate` fuses both models, sweeps the cost
+threshold, and writes `models/threshold.json`. Re-runs of `prepare`
+skip existing crops (`--overwrite` to force).
 
 ## Repo structure
 
 ```
 brief/                 # identity, objective, original briefs (French)
-src/valeo_qc/          # preprocessing, decision logic, classifier, PaDiM
+src/valeo_qc/          # preprocessing, decision, classifier, PaDiM, calibrate
 tests/
 docs/presentations/    # Marp sources (recruiter + technical, FR/EN)
 ```

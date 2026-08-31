@@ -1,0 +1,147 @@
+{
+  "val_n": 1655,
+  "val_has_drift": false,
+  "operating_point": {
+    "name": "protect_good",
+    "threshold": 0.6107415556907654,
+    "pwa": 0.9987854380664652,
+    "n_false_drift": 20,
+    "n_false_drift_good": 0,
+    "reason": "Le val n'a pas de drift : le max PWA (seuil 1) éteint PaDiM. On exporte le plus petit seuil qui ne classe aucun GOOD en drift (case à 10 000), et on compare au 0,5 du notebook."
+  },
+  "pipelines": {
+    "official": {
+      "points": {
+        "classifier_only": {
+          "n": 1655,
+          "pwa": 0.9999937764350453,
+          "total_penalty": 103.0,
+          "n_pred_drift": 0,
+          "n_false_drift": 0,
+          "n_false_drift_good": 0,
+          "n_missed_drift": 0,
+          "n_class_error": 4,
+          "penalty_false_drift": 0.0,
+          "penalty_missed_drift": 0.0,
+          "penalty_class_error": 103.0,
+          "threshold": 1.0
+        },
+        "benchmark_0.5": {
+          "n": 1655,
+          "pwa": 0.9894803021148036,
+          "total_penalty": 174101.0,
+          "n_pred_drift": 57,
+          "n_false_drift": 57,
+          "n_false_drift_good": 13,
+          "n_missed_drift": 0,
+          "n_class_error": 2,
+          "penalty_false_drift": 174000.0,
+          "penalty_missed_drift": 0.0,
+          "penalty_class_error": 101.0,
+          "threshold": 0.5
+        },
+        "val_pwa_max": {
+          "n": 1655,
+          "pwa": 0.9999937764350453,
+          "total_penalty": 103.0,
+          "n_pred_drift": 0,
+          "n_false_drift": 0,
+          "n_false_drift_good": 0,
+          "n_missed_drift": 0,
+          "n_class_error": 4,
+          "penalty_false_drift": 0.0,
+          "penalty_missed_drift": 0.0,
+          "penalty_class_error": 103.0,
+          "threshold": 1.0
+        },
+        "protect_good": {
+          "n": 1655,
+          "pwa": 0.9987854380664652,
+          "total_penalty": 20101.0,
+          "n_pred_drift": 20,
+          "n_false_drift": 20,
+          "n_false_drift_good": 0,
+          "n_missed_drift": 0,
+          "n_class_error": 2,
+          "penalty_false_drift": 20000.0,
+          "penalty_missed_drift": 0.0,
+          "penalty_class_error": 101.0,
+          "threshold": 0.6107415556907654
+        }
+      },
+      "n": 1655,
+      "n_drift_labels": 0
+    },
+    "ours": {
+      "points": {
+        "classifier_only": {
+          "n": 1655,
+          "pwa": 0.9981810271903323,
+          "total_penalty": 30104.0,
+          "n_pred_drift": 0,
+          "n_false_drift": 0,
+          "n_false_drift_good": 0,
+          "n_missed_drift": 0,
+          "n_class_error": 8,
+          "penalty_false_drift": 0.0,
+          "penalty_missed_drift": 0.0,
+          "penalty_class_error": 30104.0,
+          "threshold": 1.0
+        },
+        "benchmark_0.5": {
+          "n": 1655,
+          "pwa": 0.9943141389728096,
+          "total_penalty": 94101.0,
+          "n_pred_drift": 37,
+          "n_false_drift": 37,
+          "n_false_drift_good": 3,
+          "n_missed_drift": 0,
+          "n_class_error": 5,
+          "penalty_false_drift": 64000.0,
+          "penalty_missed_drift": 0.0,
+          "penalty_class_error": 30101.0,
+          "threshold": 0.5
+        },
+        "val_pwa_max": {
+          "n": 1655,
+          "pwa": 0.9981810271903323,
+          "total_penalty": 30104.0,
+          "n_pred_drift": 0,
+          "n_false_drift": 0,
+          "n_false_drift_good": 0,
+          "n_missed_drift": 0,
+          "n_class_error": 8,
+          "penalty_false_drift": 0.0,
+          "penalty_missed_drift": 0.0,
+          "penalty_class_error": 30104.0,
+          "threshold": 1.0
+        },
+        "protect_good": {
+          "n": 1655,
+          "pwa": 0.996912326283988,
+          "total_penalty": 51101.0,
+          "n_pred_drift": 21,
+          "n_false_drift": 21,
+          "n_false_drift_good": 0,
+          "n_missed_drift": 0,
+          "n_class_error": 5,
+          "penalty_false_drift": 21000.0,
+          "penalty_missed_drift": 0.0,
+          "penalty_class_error": 30101.0,
+          "threshold": 0.5796114802360535
+        }
+      },
+      "n": 1655,
+      "n_drift_labels": 0
+    }
+  },
+  "class_names": {
+    "0": "GOOD",
+    "1": "Boucle plate",
+    "2": "Lift-off blanc",
+    "3": "Lift-off noir",
+    "4": "Missing",
+    "5": "Short circuit MOS",
+    "6": "Drift"
+  }
+}

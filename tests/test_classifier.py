@@ -18,6 +18,7 @@ from valeo_qc.classifier import (
     evaluate_classifier,
     load_split,
     load_weight_tensor,
+    predict_proba,
     train_classifier,
 )
 
@@ -131,3 +132,12 @@ def test_evaluate_classifier_tiny() -> None:
     metrics = evaluate_classifier(TinyNet(), batch, torch.device("cpu"))
     assert metrics["n"] == 2
     assert 0.0 <= metrics["accuracy"] <= 1.0
+
+
+def test_predict_proba_softmax_sur_logits() -> None:
+    """TinyNet sort des logits : predict_proba renormalise en 6-simplex."""
+    batch = [(torch.zeros(2, 3, 224, 224), torch.tensor([0, 1]))]
+    probs, labels = predict_proba(TinyNet(), batch, torch.device("cpu"))
+    assert probs.shape == (2, 6)
+    np.testing.assert_allclose(probs.sum(axis=1), np.ones(2), rtol=1e-5)
+    assert list(labels) == [0, 1]

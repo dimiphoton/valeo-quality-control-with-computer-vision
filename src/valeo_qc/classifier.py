@@ -241,6 +241,36 @@ def load_official_classifier(
     return loaded.to(device)
 
 
+def load_trained_classifier(
+    checkpoint: Path | None = None,
+    device: torch.device | None = None,
+) -> Classifier:
+    """Charge un checkpoint local ``state_dict`` (pas le pickle officiel).
+
+    Parameters
+    ----------
+    checkpoint
+        Défaut : ``models/classifier-best.pt``.
+    device
+        Cible. Défaut : :func:`get_device`.
+
+    Returns
+    -------
+    Classifier
+        Modèle en ``eval()``.
+    """
+    path = MODELS_DIR / "classifier-best.pt" if checkpoint is None else Path(checkpoint)
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    device = get_device() if device is None else device
+    payload = torch.load(path, map_location=device, weights_only=False)
+    model_name = payload.get("model_name", DEFAULT_MODEL_NAME)
+    net = build_classifier(model_name, pretrained=False)
+    net.load_state_dict(payload["state_dict"])
+    net.eval()
+    return net.to(device)
+
+
 def build_classifier(
     model_name: str = DEFAULT_MODEL_NAME,
     num_classes: int = N_KNOWN_CLASSES,
@@ -299,6 +329,40 @@ def evaluate_classifier(
     metrics = classification_metrics(np.asarray(y_true), np.asarray(y_pred))
     metrics["n"] = len(y_true)
     return metrics
+
+
+@torch.no_grad()
+def predict_proba(
+    model: nn.Module,
+    loader: DataLoader,
+    device: torch.device,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Probabilités 6 classes, alignées sur l'ordre du loader.
+
+    Si la sortie ne somme pas à 1 (logits), on applique un softmax.
+
+    Parameters
+    ----------
+    model, loader, device
+        Réseau, données, device.
+
+    Returns
+    -------
+    tuple
+        ``probs (n, 6)``, ``labels (n,)``.
+    """
+    model.eval()
+    all_probs: list[np.ndarray] = []
+    all_labels: list[int] = []
+    for images, labels in loader:
+        outputs = model(images.to(device))
+        row_sum = outputs.sum(dim=1)
+        ones = torch.ones_like(row_sum)
+        if not torch.allclose(row_sum, ones, atol=1e-3):
+            outputs = torch.softmax(outputs, dim=1)
+        all_probs.append(outputs.detach().cpu().numpy())
+        all_labels.extend(labels.tolist())
+    return np.concatenate(all_probs, axis=0), np.asarray(all_labels, dtype=np.int64)
 
 
 def load_weight_tensor(

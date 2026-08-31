@@ -13,3 +13,4 @@
 | 2026-08-30 | Pas de normalise ImageNet à l'entrée du classifieur | mean/std ImageNet | Le notebook officiel ne fait que `Resize(224)+ToTensor`. On aligne l'éval. |
 | 2026-08-30 | PaDiM **sans anomalib**, copie du notebook (WRN-50-2, seed 1024) | Installer anomalib | Le pickle officiel n'est pas un checkpoint anomalib ; même geste que pour ``resnest50d``. |
 | 2026-08-30 | Fit PaDiM sur **toutes** les classes du split train + ridge 0,01 | GOOD only, LedoitWolf | Le pickle officiel a des scores Missing ≪ GOOD : le Gaussian est dominé par la classe majoritaire. LedoitWolf exigerait ~15 Go d'embeddings. |
+| 2026-08-31 | Seuil exporté = **protège-GOOD** (0,611 officiel) | Max PWA val (seuil 1) ou 0,5 du notebook | Val sans drift : le max PWA éteint PaDiM. Le 0,5 flag 13 GOOD (×10 000). Protège-GOOD reste comparable au benchmark tout en coupant la case la plus chère. |
