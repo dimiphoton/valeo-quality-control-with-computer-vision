@@ -2,6 +2,10 @@
 
 ## [Non publié]
 
+- Export ONNX : `classifier.onnx` (resnest50d, 97 Mo, max_abs=0 vs
+  PyTorch) et `padim-backbone.onnx` (WRN-50-2, 95 Mo, max_abs 2e-6).
+  La gaussienne PaDiM reste un pickle. Inférence onnxruntime dans un
+  sous-processus (conflit DLL torch/CUDA sous Windows).
 - Calibration du seuil : le val n'a pas de drift, donc le max PWA éteint
   PaDiM. Seuil exporté **protège-GOOD** = 0,611 (0 GOOD→drift). À 0,5
   l'officiel flag 13 GOOD (PWA 0,989 vs 0,999).

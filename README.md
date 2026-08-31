@@ -94,8 +94,19 @@ positive). PWA = 1 − penalty / (n × 10 000):
 | Ours, notebook 0.5 | 0.50 | 0.994 | 37 (3 GOOD) |
 
 At 0.5 the official PaDiM pays 13 × 10 000 for GOOD→drift. The exported
-threshold is the lowest that never flags a val GOOD. ONNX and the Lambda
-API come next (see `ROADMAP.md`).
+threshold is the lowest that never flags a val GOOD.
+
+ONNX export (`python -m valeo_qc.cli export`, opset 18), checked against
+PyTorch on a dummy tensor:
+
+| Graph | Size | max abs vs PyTorch |
+|---|---|---|
+| `models/classifier.onnx` (resnest50d, softmax) | 97 MB | 0 |
+| `models/padim-backbone.onnx` (WRN-50-2, 550×32×32) | 95 MB | 2×10⁻⁶ |
+
+The PaDiM Gaussian (mean/cov, ~1.2 GB) stays a pickle — it is not a
+network. Single-image inference must freeze the notebook's batch min-max
+(otherwise the score is always 1). Lambda API is next (`ROADMAP.md`).
 
 ## Reproduce
 
@@ -108,6 +119,7 @@ python -m valeo_qc.cli train-classifier
 python -m valeo_qc.cli eval-padim
 python -m valeo_qc.cli train-padim
 python -m valeo_qc.cli calibrate
+python -m valeo_qc.cli export
 mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
@@ -115,14 +127,16 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 `data/raw/`). `eval-classifier` / `eval-padim` score the official
 checkpoints on val. `train-classifier` and `train-padim` log to local
 MLflow (SQLite). `calibrate` fuses both models, sweeps the cost
-threshold, and writes `models/threshold.json`. Re-runs of `prepare`
+threshold, and writes `models/threshold.json`. `export` writes
+`models/classifier.onnx`, `models/padim-backbone.onnx`, and
+`models/onnx-manifest.json` (onnxruntime vs PyTorch check). Re-runs of `prepare`
 skip existing crops (`--overwrite` to force).
 
 ## Repo structure
 
 ```
 brief/                 # identity, objective, original briefs (French)
-src/valeo_qc/          # preprocessing, decision, classifier, PaDiM, calibrate
+src/valeo_qc/          # preprocessing, decision, classifier, PaDiM, calibrate, export
 tests/
 docs/presentations/    # Marp sources (recruiter + technical, FR/EN)
 ```
