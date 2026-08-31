@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-08-31 — Contenu des decks (projet + architecture)
+
+- Recruteur : une slide « c'est quoi » puis un schéma en 4 étapes métier.
+- Technique : couverture « du recadrage à Lambda », schéma train / serve.
+- Graphes `architecture-plain-{fr,en}.png` et `architecture-serve.png`.
+
 ## 2026-08-31 — GitHub Pages
 
 - Pages n'était pas activé (404). Source `/docs`. Visuels copiés sous

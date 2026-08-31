@@ -24,6 +24,21 @@ Valeo · Challenge Data ENS #157
 
 ![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
+# This is quality
+# control on Valeo
+# component photos.
+
+Eight thousand images. Six defects have names.
+The seventh — the unknown — appears only at test time.
+
+**The deliverable: a decision rule, then an API.**
+
+---
+
+<!-- _class: split -->
+
+![bg left:46%](../pictures/presentations/photos/hero.jpg)
+
 # A good part labelled
 # “unknown” is the
 # expensive mistake.
@@ -36,7 +51,7 @@ On an electronics line, a false reject is not a rounding error.
 
 <!-- _class: split -->
 
-![bg left:46%](../pictures/presentations/photos/hero.jpg)
+![bg left:46%](../pictures/presentations/photos/physique.jpg)
 
 # Who has a call
 # to make.
@@ -57,23 +72,16 @@ The operator: scrap, pass, or open the bin.
 # see “the board”.
 # It sees a window.
 
-We crop. Six defects have names.
-The seventh — drift — is absent from training.
+We crop. We name what is known.
+We flag what has never been seen.
 
 ---
 
-<!-- _class: split -->
+<!-- _class: chart -->
 
-![bg left:46%](../pictures/presentations/photos/motivation.jpg)
+Four steps, not a single “brain”.
 
-# How to read
-# the pictures.
-
-8,278 training images. Six labels.
-One class, “Missing”, drowns the rest.
-
-**Drift shows up only on the hidden test set.**
-So we calibrate without ever seeing it.
+![w:980](../pictures/presentations/architecture-plain-en.png)
 
 ---
 
@@ -85,20 +93,7 @@ Not a leaderboard hunt.
 
 Not an HR dashboard.
 
-**A decision rule, then an inference API.**
-
----
-
-<!-- _class: full -->
-
-![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
-
-# 99.8 % of labels
-# are right.
-# That is not the point.
-
-At the notebook threshold: 13 good parts
-thrown out as unknown.
+**A pipeline: photo → decision → API.**
 
 ---
 
@@ -109,7 +104,7 @@ thrown out as unknown.
 # Zero good parts
 # labelled unknown.
 
-The threshold is set to protect GOOD.
+The threshold protects GOOD.
 Twenty false alarms. None on a healthy part.
 
 ---
@@ -119,14 +114,6 @@ Twenty false alarms. None on a healthy part.
 The notebook scraps 13 good parts. The chosen threshold scraps none.
 
 ![w:920](../pictures/presentations/good-flagged.png)
-
----
-
-<!-- _class: chart -->
-
-On the hold-out set, the cost bill drops from 174,000 to 20,000.
-
-![w:920](../pictures/presentations/penalty-val.png)
 
 ---
 
@@ -163,6 +150,6 @@ Not a magic model. A rule you can defend.
 
 # Your turn.
 
-[Source code](https://github.com/dimiphoton/valeo-quality-control-with-computer-vision)
+[All four decks](https://dimiphoton.github.io/valeo-quality-control-with-computer-vision/)
 
-[Valeo challenge](https://challengedata.ens.fr/participants/challenges/157/)
+[Source code](https://github.com/dimiphoton/valeo-quality-control-with-computer-vision)

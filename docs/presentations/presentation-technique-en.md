@@ -9,10 +9,10 @@ paginate: true
 
 ![bg brightness:0.40](../pictures/presentations/photos/hero.jpg)
 
-# How do you fuse a
-# classifier and PaDiM
-# when val has no
-# drift labels?
+# From crop to Lambda:
+# name known defects,
+# flag drift,
+# at business cost.
 
 Machine learning · Industry / quality control · Python / PyTorch / ONNX / AWS
 
@@ -23,6 +23,21 @@ Valeo · ENS #157 · 8,278 training images
 <!-- _class: split -->
 
 ![bg left:46%](../pictures/presentations/photos/motivation.jpg)
+
+# We reproduce the
+# official pipeline,
+# then we serve it.
+
+Valeo challenge: six named defects, drift absent from train.
+Fusion is fitted on the cost matrix, not on accuracy.
+
+**Ship: `threshold.json` + an ONNX API, no PyTorch.**
+
+---
+
+<!-- _class: split -->
+
+![bg left:46%](../pictures/presentations/photos/hero.jpg)
 
 # GOOD → drift
 # costs 10,000.
@@ -36,16 +51,16 @@ A GOOD part thrown as unknown: 10,000.
 
 <!-- _class: split -->
 
-![bg left:46%](../pictures/presentations/photos/hero.jpg)
+![bg left:46%](../pictures/presentations/photos/physique.jpg)
 
 # Who consumes
 # the score.
 
 The jury: PWA on a hidden test (2 submissions / 24 h).
 
-Plant quality: an API, image in, class out.
+Plant quality: POST an image, get a class.
 
-**The deliverable is not a notebook. It is an exported threshold.**
+**The notebook is not the product. The API is.**
 
 ---
 
@@ -62,18 +77,26 @@ Above the threshold → drift.
 
 ---
 
+<!-- _class: chart -->
+
+Train on one path, inference on the other. Billing alarm before Lambda.
+
+![w:980](../pictures/presentations/architecture-serve.png)
+
+---
+
 <!-- _class: split -->
 
 ![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
-# Grain and
-# units.
+# Grain: one image,
+# two resolutions.
 
 Raw PNG → rotate + crop by `lib`.
 224 px classifier, 128 px PaDiM.
 
-**We do not reuse the val-batch min-max
-on a single production image.**
+**In production the PaDiM min-max is frozen.
+Per-image min-max would always score 1.**
 
 ---
 
@@ -95,9 +118,9 @@ Not an AUC. Not a global F1.
 
 # Scope.
 
-An honest benchmark, then an ONNX API.
+Honest benchmark, ONNX export, CloudFormation plan.
 
-Not a leaderboard chase, not anomalib, not SAM.
+No leaderboard chase, no anomalib, no SAM.
 
 ---
 
@@ -146,30 +169,6 @@ Twenty false drifts, none of them GOOD.
 At 0.50 the official run pays for 13 GOOD. The chosen threshold cuts that cell. Ours follows.
 
 ![w:980](../pictures/presentations/pwa-points.png)
-
----
-
-<!-- _class: split -->
-
-![bg left:40%](../pictures/presentations/photos/hero.jpg)
-
-# Same rule on
-# the retrained stack.
-
-Official at 0.50: 13 GOOD.
-Ours at 0.50: 3 GOOD.
-Protect-GOOD: 0 on both.
-
----
-
-<!-- _class: dark -->
-
-# Why not max PWA.
-
-It sets the threshold to 1 and kills PaDiM.
-
-Why not a transformer: the official pickle is a ResNeSt-50d.
-We benchmark what is there, not a different paper.
 
 ---
 
