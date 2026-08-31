@@ -22,6 +22,7 @@ mlruns/
 models/*.pt
 models/*.pth
 models/*.pkl
+models/*.onnx
 
 # Décommente si les modèles deviennent trop volumineux pour git classique
 # models/*.pkl

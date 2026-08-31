@@ -1,0 +1,46 @@
+{
+  "opset": 18,
+  "classifier": {
+    "path": "models/classifier.onnx",
+    "bytes": 101890167,
+    "input_shape": [
+      null,
+      3,
+      224,
+      224
+    ],
+    "output": "probs",
+    "architecture": "resnest50d"
+  },
+  "padim_backbone": {
+    "path": "models/padim-backbone.onnx",
+    "bytes": 99398728,
+    "input_shape": [
+      null,
+      3,
+      128,
+      128
+    ],
+    "output": "embeddings",
+    "architecture": "wide_resnet50_2",
+    "d": 550,
+    "stats": "data/raw/Supp_files/PADIM.pkl",
+    "stats_note": "La gaussienne (mean/cov) reste un pickle hors ONNX : trop volumineuse et ce n'est pas un réseau."
+  },
+  "decision": {
+    "threshold_json": "models/threshold.json",
+    "threshold": 0.6107415556907654,
+    "operating_point": "protect_good",
+    "score_norm": "Le min-max du notebook est calculé sur le lot scoré. En inférence unitaire il faut figer min/max (sinon le score vaut 1). À brancher à l'étape Lambda."
+  },
+  "checks": {
+    "classifier": {
+      "max_abs": 0.0,
+      "ok": true
+    },
+    "padim_backbone": {
+      "max_abs": 1.8253922462463379e-06,
+      "ok": true
+    }
+  }
+}

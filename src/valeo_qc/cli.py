@@ -165,11 +165,33 @@ def _cmd_calibrate(args: argparse.Namespace) -> None:
             print(f"{key}: {path}")
 
 
+def _cmd_export(args: argparse.Namespace) -> None:
+    """Exporte classifieur + backbone PaDiM en ONNX et écrit le manifeste."""
+    from valeo_qc.export import export_pipeline
+
+    report = export_pipeline(
+        opset=args.opset,
+        skip_classifier=args.skip_classifier,
+        skip_padim=args.skip_padim,
+        verify=not args.no_verify,
+    )
+    print(f"manifeste {report['manifest']}")
+    if report.get("classifier"):
+        print(f"  classifieur {report['classifier']['path']} ({report['classifier']['bytes']} octets)")
+    if report.get("padim_backbone"):
+        print(
+            f"  padim {report['padim_backbone']['path']} "
+            f"({report['padim_backbone']['bytes']} octets)"
+        )
+    for name, check in report.get("checks", {}).items():
+        print(f"  verif {name}: max_abs={check['max_abs']:.3g}")
+
+
 def main() -> None:
     """Point d'entrée principal du CLI."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser(
-        description="Contrôle qualité Valeo — prétraitement, classifieur, PaDiM, seuil"
+        description="Contrôle qualité Valeo — prétraitement, classifieur, PaDiM, seuil, ONNX"
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -261,6 +283,28 @@ def main() -> None:
         help="ne pas scorer les checkpoints locaux",
     )
     cal_p.set_defaults(func=_cmd_calibrate)
+
+    export_p = sub.add_parser(
+        "export",
+        help="exporte classifieur + backbone PaDiM en ONNX (gaussienne hors graphe)",
+    )
+    export_p.add_argument("--opset", type=int, default=18)
+    export_p.add_argument(
+        "--skip-classifier",
+        action="store_true",
+        help="ne pas exporter le resnest50d",
+    )
+    export_p.add_argument(
+        "--skip-padim",
+        action="store_true",
+        help="ne pas exporter le WRN-50-2",
+    )
+    export_p.add_argument(
+        "--no-verify",
+        action="store_true",
+        help="ne pas comparer PyTorch et onnxruntime sur un dummy",
+    )
+    export_p.set_defaults(func=_cmd_export)
 
     args = parser.parse_args()
     args.func(args)

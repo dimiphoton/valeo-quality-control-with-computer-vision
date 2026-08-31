@@ -21,6 +21,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from scipy.ndimage import gaussian_filter
 from torch.utils.data import DataLoader
@@ -76,28 +77,13 @@ def dimension_index(t_d: int = T_D, d: int = D, seed: int = SEED) -> torch.Tenso
 
 
 def embedding_concat(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-    """Concatène deux cartes de features en upsamplant ``y`` vers ``x``.
+    """Concatène ``y`` sur ``x`` après upsample nearest.
 
-    Copie du notebook officiel (unfold / fold).
+    Équivalent au unfold/fold du notebook (kernel = stride = Hx/Hy, sans
+    recouvrement) et exportable ONNX (Resize + Concat, pas de ``col2im``).
     """
-    batch, c1, h1, w1 = x.size()
-    _, c2, h2, _ = y.size()
-    scale = int(h1 / h2)
-    unfolded = F.unfold(x, kernel_size=scale, dilation=1, stride=scale)
-    unfolded = unfolded.view(batch, c1, -1, h2, h2)
-    stacked = torch.zeros(
-        batch,
-        c1 + c2,
-        unfolded.size(2),
-        h2,
-        h2,
-        device=x.device,
-        dtype=x.dtype,
-    )
-    for patch in range(unfolded.size(2)):
-        stacked[:, :, patch, :, :] = torch.cat((unfolded[:, :, patch, :, :], y), 1)
-    stacked = stacked.view(batch, -1, h2 * h2)
-    return F.fold(stacked, kernel_size=scale, output_size=(h1, w1), stride=scale)
+    y_up = F.interpolate(y, size=x.shape[-2:], mode="nearest")
+    return torch.cat((x, y_up), dim=1)
 
 
 class WideResNetFeatures:
@@ -130,6 +116,43 @@ class WideResNetFeatures:
         concatenated = embedding_concat(concatenated, layer3)
         idx = idx.to(concatenated.device)
         return torch.index_select(concatenated, 1, idx)
+
+
+class PadimBackbone(nn.Module):
+    """WideResNet-50-2 jusqu'à layer3, concat PaDiM, sélection de canaux.
+
+    Mêmes activations que :class:`WideResNetFeatures`, sous forme de
+    ``nn.Module`` (pas de hooks) pour l'export ONNX.
+    """
+
+    def __init__(
+        self,
+        idx: torch.Tensor,
+        weights: Wide_ResNet50_2_Weights | None = Wide_ResNet50_2_Weights.IMAGENET1K_V1,
+    ) -> None:
+        super().__init__()
+        wrn = wide_resnet50_2(weights=weights)
+        self.conv1 = wrn.conv1
+        self.bn1 = wrn.bn1
+        self.relu = wrn.relu
+        self.maxpool = wrn.maxpool
+        self.layer1 = wrn.layer1
+        self.layer2 = wrn.layer2
+        self.layer3 = wrn.layer3
+        self.register_buffer("idx", idx.long())
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Embeddings réduits ``(B, D, 32, 32)`` pour un batch 128×128."""
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+        layer1 = self.layer1(x)
+        layer2 = self.layer2(layer1)
+        layer3 = self.layer3(layer2)
+        concatenated = embedding_concat(layer1, layer2)
+        concatenated = embedding_concat(concatenated, layer3)
+        return torch.index_select(concatenated, 1, self.idx)
 
 
 def invert_covariance(cov: np.ndarray, chunk: int = 32) -> np.ndarray:

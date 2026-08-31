@@ -1,5 +1,15 @@
 # Journal de développement
 
+## 2026-08-31 — Export ONNX
+
+- `models/classifier.onnx` (resnest50d, 97 Mo) : max_abs = 0 vs PyTorch.
+  `models/padim-backbone.onnx` (WRN-50-2, 95 Mo) : max_abs ≈ 2e-6.
+  Gaussienne mean/cov hors graphe (pickle 1,2 Go).
+- Concat PaDiM : upsample nearest, équivalent au unfold/fold du notebook
+  (exportable, pas de `col2im`). Opset 18.
+- Inférence onnxruntime en sous-processus (DLL torch/CUDA sous Windows).
+  En inférence unitaire, figer le min-max — un min-max par image donne 1.
+
 ## 2026-08-31 — Seuil de coût
 
 - Val sans `drift` : max PWA = seuil 1 (PaDiM éteint). Le 0,5 du notebook

@@ -24,6 +24,30 @@ from valeo_qc.padim import (
 )
 
 
+def _embedding_concat_loop(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    """Copie bouclée du notebook, pour vérifier la version vectorisée."""
+    import torch.nn.functional as F
+
+    batch, c1, h1, w1 = x.size()
+    _, c2, h2, _ = y.size()
+    scale = int(h1 / h2)
+    unfolded = F.unfold(x, kernel_size=scale, dilation=1, stride=scale)
+    unfolded = unfolded.view(batch, c1, -1, h2, h2)
+    stacked = torch.zeros(
+        batch,
+        c1 + c2,
+        unfolded.size(2),
+        h2,
+        h2,
+        device=x.device,
+        dtype=x.dtype,
+    )
+    for patch in range(unfolded.size(2)):
+        stacked[:, :, patch, :, :] = torch.cat((unfolded[:, :, patch, :, :], y), 1)
+    stacked = stacked.view(batch, -1, h2 * h2)
+    return F.fold(stacked, kernel_size=scale, output_size=(h1, w1), stride=scale)
+
+
 def test_dimension_index_reproductible() -> None:
     """Seed 1024 → 550 indices uniques, identiques d'un appel à l'autre."""
     first = dimension_index()
@@ -41,6 +65,16 @@ def test_embedding_concat_double_la_resolution() -> None:
     high = torch.ones(2, 4, 4, 4)
     out = embedding_concat(low, high)
     assert tuple(out.shape) == (2, 6, 8, 8)
+    assert torch.allclose(out, torch.ones(2, 6, 8, 8))
+
+
+def test_embedding_concat_vectorise_egal_boucle() -> None:
+    """La version sans boucle Python colle au notebook officiel."""
+    torch.manual_seed(0)
+    x = torch.randn(2, 3, 8, 8)
+    y = torch.randn(2, 5, 4, 4)
+    looped = _embedding_concat_loop(x, y)
+    assert torch.allclose(embedding_concat(x, y), looped, atol=1e-6)
 
 
 def test_fit_gaussian_puis_mahalanobis_nul_sur_la_moyenne() -> None:
