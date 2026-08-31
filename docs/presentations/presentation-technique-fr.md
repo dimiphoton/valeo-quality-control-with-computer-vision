@@ -7,7 +7,7 @@ paginate: true
 <!-- _class: cover -->
 <!-- _paginate: false -->
 
-![bg brightness:0.40](../../pictures/presentations/photos/hero.jpg)
+![bg brightness:0.40](../pictures/presentations/photos/hero.jpg)
 
 # Comment fusionner
 # classifieur et PaDiM
@@ -22,7 +22,7 @@ Valeo · ENS #157 · 8 278 images train
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
+![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
 # GOOD → drift
 # coûte 10 000.
@@ -36,7 +36,7 @@ Un GOOD jeté comme inconnu : 10 000.
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/hero.jpg)
+![bg left:46%](../pictures/presentations/photos/hero.jpg)
 
 # Qui consomme
 # le score.
@@ -51,7 +51,7 @@ Qualité usine : une API, image in, classe out.
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
 
 # Deux modèles,
 # une décision.
@@ -64,7 +64,7 @@ Au-dessus du seuil → drift.
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
+![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
 # Grain et
 # unités.
@@ -79,7 +79,7 @@ avec une image unique en prod.**
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/physique.jpg)
+![bg left:46%](../pictures/presentations/photos/physique.jpg)
 
 # Ce qu'on isole.
 
@@ -105,13 +105,13 @@ On n'est pas un leaderboard, ni anomalib, ni SAM.
 
 Missing pèse 6 472 images. Boucle plate, 71. L'accuracy globale ment.
 
-![w:920](../../pictures/presentations/class-counts.png)
+![w:920](../pictures/presentations/class-counts.png)
 
 ---
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
 
 # Le pickle officiel
 # fait 99,8 % / F1 0,973.
@@ -125,13 +125,13 @@ Boucle plate reste le point faible (rappel 0,86).
 
 PaDiM n'est pas calé sur les pièces saines. Missing est plus « in-distribution » que GOOD.
 
-![w:920](../../pictures/presentations/padim-by-class.png)
+![w:920](../pictures/presentations/padim-by-class.png)
 
 ---
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/hero.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/hero.jpg)
 
 # Protège-GOOD = 0,611.
 # PWA 0,999. 0 GOOD flaggé.
@@ -145,13 +145,13 @@ Vingt faux drift, aucun GOOD.
 
 À 0,50 l'officiel paye 13 GOOD. Le seuil retenu coupe cette case. Le nôtre suit.
 
-![w:980](../../pictures/presentations/pwa-points.png)
+![w:980](../pictures/presentations/pwa-points.png)
 
 ---
 
 <!-- _class: split -->
 
-![bg left:40%](../../pictures/presentations/photos/hero.jpg)
+![bg left:40%](../pictures/presentations/photos/hero.jpg)
 
 # Même logique
 # sur le réentraînement.
@@ -187,7 +187,7 @@ Function URL publique, `--apply` jamais lancé sur un compte.
 
 <!-- _class: cta -->
 
-![bg brightness:0.30](../../pictures/presentations/photos/cta.jpg)
+![bg brightness:0.30](../pictures/presentations/photos/cta.jpg)
 
 # Reproduire.
 

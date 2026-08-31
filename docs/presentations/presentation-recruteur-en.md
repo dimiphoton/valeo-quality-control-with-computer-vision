@@ -7,7 +7,7 @@ paginate: true
 <!-- _class: cover -->
 <!-- _paginate: false -->
 
-![bg brightness:0.40](../../pictures/presentations/photos/hero.jpg)
+![bg brightness:0.40](../pictures/presentations/photos/hero.jpg)
 
 # Can a camera scrap
 # fewer good parts
@@ -22,7 +22,7 @@ Valeo · Challenge Data ENS #157
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
+![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
 # A good part labelled
 # “unknown” is the
@@ -36,7 +36,7 @@ On an electronics line, a false reject is not a rounding error.
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/hero.jpg)
+![bg left:46%](../pictures/presentations/photos/hero.jpg)
 
 # Who has a call
 # to make.
@@ -51,7 +51,7 @@ The operator: scrap, pass, or open the bin.
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
 
 # The camera does not
 # see “the board”.
@@ -64,7 +64,7 @@ The seventh — drift — is absent from training.
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
+![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
 # How to read
 # the pictures.
@@ -91,7 +91,7 @@ Not an HR dashboard.
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
 
 # 99.8 % of labels
 # are right.
@@ -104,7 +104,7 @@ thrown out as unknown.
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/hero.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/hero.jpg)
 
 # Zero good parts
 # labelled unknown.
@@ -118,7 +118,7 @@ Twenty false alarms. None on a healthy part.
 
 The notebook scraps 13 good parts. The chosen threshold scraps none.
 
-![w:920](../../pictures/presentations/good-flagged.png)
+![w:920](../pictures/presentations/good-flagged.png)
 
 ---
 
@@ -126,13 +126,13 @@ The notebook scraps 13 good parts. The chosen threshold scraps none.
 
 On the hold-out set, the cost bill drops from 174,000 to 20,000.
 
-![w:920](../../pictures/presentations/penalty-val.png)
+![w:920](../pictures/presentations/penalty-val.png)
 
 ---
 
 <!-- _class: split -->
 
-![bg left:40%](../../pictures/presentations/photos/physique.jpg)
+![bg left:40%](../pictures/presentations/photos/physique.jpg)
 
 # This is not
 # a homemade metric.
@@ -145,7 +145,7 @@ The 13 is the official model, not ours.
 
 <!-- _class: actions -->
 
-![bg right:38%](../../pictures/presentations/photos/hero.jpg)
+![bg right:38%](../pictures/presentations/photos/hero.jpg)
 
 # Monday.
 
@@ -159,7 +159,7 @@ Not a magic model. A rule you can defend.
 
 <!-- _class: cta -->
 
-![bg brightness:0.30](../../pictures/presentations/photos/cta.jpg)
+![bg brightness:0.30](../pictures/presentations/photos/cta.jpg)
 
 # Your turn.
 

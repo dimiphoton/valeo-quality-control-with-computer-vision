@@ -195,9 +195,9 @@ The recruiter deck is a ~6-minute pitch; the technical deck is a ~12-minute
 deep dive. The recruiter deck asks whether a camera can scrap fewer good parts.
 The technical deck asks how to fuse the classifier and PaDiM when
 validation has no drift labels. HTML is built by GitHub Actions on push
-to `main` (do not run Marp locally).
+to `main` (do not run Marp locally). GitHub Pages is served from `/docs`.
 
-- [Recruiter overview (EN)](docs/slides/presentation-recruteur-en.html)
-- [Technical deep dive (EN)](docs/slides/presentation-technique-en.html)
-- [Présentation grand public (FR)](docs/slides/presentation-recruteur-fr.html)
-- [Présentation technique (FR)](docs/slides/presentation-technique-fr.html)
+- [Recruiter overview (EN)](https://dimiphoton.github.io/valeo-quality-control-with-computer-vision/slides/presentation-recruteur-en.html)
+- [Technical deep dive (EN)](https://dimiphoton.github.io/valeo-quality-control-with-computer-vision/slides/presentation-technique-en.html)
+- [Présentation grand public (FR)](https://dimiphoton.github.io/valeo-quality-control-with-computer-vision/slides/presentation-recruteur-fr.html)
+- [Présentation technique (FR)](https://dimiphoton.github.io/valeo-quality-control-with-computer-vision/slides/presentation-technique-fr.html)

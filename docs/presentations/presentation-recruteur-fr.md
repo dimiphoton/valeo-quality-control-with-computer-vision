@@ -7,7 +7,7 @@ paginate: true
 <!-- _class: cover -->
 <!-- _paginate: false -->
 
-![bg brightness:0.40](../../pictures/presentations/photos/hero.jpg)
+![bg brightness:0.40](../pictures/presentations/photos/hero.jpg)
 
 # Une caméra peut-elle
 # jeter moins de pièces
@@ -22,7 +22,7 @@ Valeo · Challenge Data ENS #157
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
+![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
 # Une pièce saine
 # classée « inconnue »
@@ -36,7 +36,7 @@ Sur une ligne électronique, le faux rebut n'est pas un détail.
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/hero.jpg)
+![bg left:46%](../pictures/presentations/photos/hero.jpg)
 
 # Qui a une décision
 # à prendre.
@@ -51,7 +51,7 @@ L'opérateur : jeter, laisser passer, ou ouvrir.
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
 
 # La caméra ne voit
 # pas « la carte ».
@@ -64,7 +64,7 @@ Le septième — le drift — n'existe pas à l'entraînement.
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
+![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
 # Comment on lit
 # les photos.
@@ -91,7 +91,7 @@ Pas un tableau de bord RH.
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
 
 # 99,8 % de bonnes
 # étiquettes.
@@ -104,7 +104,7 @@ jetées comme inconnues.
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/hero.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/hero.jpg)
 
 # Zéro pièce saine
 # classée inconnue.
@@ -118,7 +118,7 @@ Vingt fausses alertes. Aucune sur une pièce bonne.
 
 Le notebook jette 13 pièces saines. Le seuil retenu, zéro.
 
-![w:920](../../pictures/presentations/good-flagged.png)
+![w:920](../pictures/presentations/good-flagged.png)
 
 ---
 
@@ -126,13 +126,13 @@ Le notebook jette 13 pièces saines. Le seuil retenu, zéro.
 
 Sur le jeu de contrôle, la facture tombe de 174 000 à 20 000.
 
-![w:920](../../pictures/presentations/penalty-val.png)
+![w:920](../pictures/presentations/penalty-val.png)
 
 ---
 
 <!-- _class: split -->
 
-![bg left:40%](../../pictures/presentations/photos/physique.jpg)
+![bg left:40%](../pictures/presentations/photos/physique.jpg)
 
 # Ce n'est pas
 # un artefact maison.
@@ -145,7 +145,7 @@ Le 13, c'est le modèle officiel, pas le nôtre.
 
 <!-- _class: actions -->
 
-![bg right:38%](../../pictures/presentations/photos/hero.jpg)
+![bg right:38%](../pictures/presentations/photos/hero.jpg)
 
 # Lundi.
 
@@ -159,7 +159,7 @@ Pas un modèle magique. Une règle qu'on peut défendre.
 
 <!-- _class: cta -->
 
-![bg brightness:0.30](../../pictures/presentations/photos/cta.jpg)
+![bg brightness:0.30](../pictures/presentations/photos/cta.jpg)
 
 # À vous.
 

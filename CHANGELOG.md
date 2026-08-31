@@ -2,6 +2,8 @@
 
 ## [Non publié]
 
+- GitHub Pages depuis `/docs` : copie des visuels sous `docs/pictures/`,
+  index des 4 decks. Les liens README pointent vers github.io, pas le `.md`.
 - Présentations Marp recruteur / technique, FR et EN : seuil protège-GOOD,
   graphes de coût, photos Unsplash. HTML via GitHub Actions au push.
 - Déploiement AWS (CloudFormation, pas SAM) : stack billing `us-east-1`
