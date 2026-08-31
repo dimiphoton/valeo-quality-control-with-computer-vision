@@ -9,7 +9,9 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "pictures" / "presentations"
+PAGES_OUT = ROOT / "docs" / "pictures" / "presentations"
 OUT.mkdir(parents=True, exist_ok=True)
+PAGES_OUT.mkdir(parents=True, exist_ok=True)
 
 BG = "#f3eee6"
 INK = "#1c1610"
@@ -31,11 +33,12 @@ def _style(ax: plt.Axes, fig: plt.Figure) -> None:
 
 
 def _save(fig: plt.Figure, name: str) -> None:
-    path = OUT / name
     fig.tight_layout()
-    fig.savefig(path, dpi=150, facecolor=BG, bbox_inches="tight")
+    for folder in (OUT, PAGES_OUT):
+        path = folder / name
+        fig.savefig(path, dpi=150, facecolor=BG, bbox_inches="tight")
+        print(path)
     plt.close(fig)
-    print(path)
 
 
 def good_flagged() -> None:

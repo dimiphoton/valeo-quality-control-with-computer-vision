@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-08-31 — GitHub Pages
+
+- Pages n'était pas activé (404). Source `/docs`. Visuels copiés sous
+  `docs/pictures/presentations/` pour que Marp les trouve en HTML.
+- `docs/index.html` liste les 4 decks.
+
 ## 2026-08-31 — Présentations FR / EN
 
 - Recruteur : 13 slides, punchline « 0 GOOD classé drift » vs 13 au seuil 0,5.

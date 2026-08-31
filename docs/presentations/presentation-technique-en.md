@@ -7,7 +7,7 @@ paginate: true
 <!-- _class: cover -->
 <!-- _paginate: false -->
 
-![bg brightness:0.40](../../pictures/presentations/photos/hero.jpg)
+![bg brightness:0.40](../pictures/presentations/photos/hero.jpg)
 
 # How do you fuse a
 # classifier and PaDiM
@@ -22,7 +22,7 @@ Valeo · ENS #157 · 8,278 training images
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
+![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
 # GOOD → drift
 # costs 10,000.
@@ -36,7 +36,7 @@ A GOOD part thrown as unknown: 10,000.
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/hero.jpg)
+![bg left:46%](../pictures/presentations/photos/hero.jpg)
 
 # Who consumes
 # the score.
@@ -51,7 +51,7 @@ Plant quality: an API, image in, class out.
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
 
 # Two models,
 # one decision.
@@ -64,7 +64,7 @@ Above the threshold → drift.
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
+![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
 # Grain and
 # units.
@@ -79,7 +79,7 @@ on a single production image.**
 
 <!-- _class: split -->
 
-![bg left:46%](../../pictures/presentations/photos/physique.jpg)
+![bg left:46%](../pictures/presentations/photos/physique.jpg)
 
 # What we isolate.
 
@@ -105,13 +105,13 @@ Not a leaderboard chase, not anomalib, not SAM.
 
 Missing is 6,472 images. *Boucle plate* is 71. Headline accuracy lies.
 
-![w:920](../../pictures/presentations/class-counts.png)
+![w:920](../pictures/presentations/class-counts.png)
 
 ---
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
 
 # The official pickle
 # is 99.8 % / F1 0.973.
@@ -125,13 +125,13 @@ Our resnest50d: 99.5 % / 0.960.
 
 PaDiM is not fitted on healthy parts. Missing is more in-distribution than GOOD.
 
-![w:920](../../pictures/presentations/padim-by-class.png)
+![w:920](../pictures/presentations/padim-by-class.png)
 
 ---
 
 <!-- _class: full -->
 
-![bg brightness:0.38](../../pictures/presentations/photos/hero.jpg)
+![bg brightness:0.38](../pictures/presentations/photos/hero.jpg)
 
 # Protect-GOOD = 0.611.
 # PWA 0.999. 0 GOOD flagged.
@@ -145,13 +145,13 @@ Twenty false drifts, none of them GOOD.
 
 At 0.50 the official run pays for 13 GOOD. The chosen threshold cuts that cell. Ours follows.
 
-![w:980](../../pictures/presentations/pwa-points.png)
+![w:980](../pictures/presentations/pwa-points.png)
 
 ---
 
 <!-- _class: split -->
 
-![bg left:40%](../../pictures/presentations/photos/hero.jpg)
+![bg left:40%](../pictures/presentations/photos/hero.jpg)
 
 # Same rule on
 # the retrained stack.
@@ -187,7 +187,7 @@ Public Function URL; `--apply` never hit a real account.
 
 <!-- _class: cta -->
 
-![bg brightness:0.30](../../pictures/presentations/photos/cta.jpg)
+![bg brightness:0.30](../pictures/presentations/photos/cta.jpg)
 
 # Reproduce.
 
