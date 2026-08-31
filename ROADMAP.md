@@ -9,6 +9,6 @@ sur la matrice de coût du challenge, puis exposer une API d'inférence.
 - [x] Détecteur d'anomalie PaDiM (reproduire le pickle officiel, puis réentraîner)
 - [x] Calibration du seuil sur le coût métier + comparaison chiffrée au benchmark
 - [x] Export ONNX
-- [ ] API Lambda locale (handler + image Docker)
+- [x] API Lambda locale (handler + image Docker)
 - [ ] Déploiement AWS (alarme CloudWatch d'abord)
 - [ ] Présentations recruteur / technique FR+EN

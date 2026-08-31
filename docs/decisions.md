@@ -16,3 +16,4 @@
 | 2026-08-31 | Seuil exporté = **protège-GOOD** (0,611 officiel) | Max PWA val (seuil 1) ou 0,5 du notebook | Val sans drift : le max PWA éteint PaDiM. Le 0,5 flag 13 GOOD (×10 000). Protège-GOOD reste comparable au benchmark tout en coupant la case la plus chère. |
 | 2026-08-31 | ONNX opset 18, gaussienne PaDiM hors graphe | Un seul graphe classifieur+PaDiM, TorchScript | `col2im` (fold) exige l'opset 18 ; la cov 1,2 Go n'est pas un réseau. Concat PaDiM = upsample nearest (équivalent au unfold/fold officiel). |
 | 2026-08-31 | Inférence ONNX en **sous-processus** | onnxruntime in-process | Sous Windows, charger onnxruntime après torch CUDA (pytest) provoque un access violation. |
+| 2026-08-31 | Image Lambda **sans PyTorch**, SAM plus tard | SAM local dès cette étape | SAM reste à valider. L'image AWS Lambda + RIE suffit pour tester le handler. PaDiM optionnel (pickle 1,2 Go + min-max figé). |

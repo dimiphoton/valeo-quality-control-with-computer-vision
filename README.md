@@ -106,7 +106,10 @@ PyTorch on a dummy tensor:
 
 The PaDiM Gaussian (mean/cov, ~1.2 GB) stays a pickle — it is not a
 network. Single-image inference must freeze the notebook's batch min-max
-(otherwise the score is always 1). Lambda API is next (`ROADMAP.md`).
+(otherwise the score is always 1). The local Lambda image runs the
+classifier without PyTorch; PaDiM is on only if the pickle and a frozen
+`models/score-scale.json` are present. AWS SAM is the next step (billing
+alarm first).
 
 ## Reproduce
 
@@ -120,7 +123,17 @@ python -m valeo_qc.cli eval-padim
 python -m valeo_qc.cli train-padim
 python -m valeo_qc.cli calibrate
 python -m valeo_qc.cli export
+python -m valeo_qc.cli predict path/to/image.png
 mlflow ui --backend-store-uri sqlite:///mlflow.db
+```
+
+Local Lambda (Docker, after `export`):
+
+```bash
+docker build -f deployment/Dockerfile -t valeo-qc-lambda .
+docker run --rm -p 9000:8080 valeo-qc-lambda
+# POST http://localhost:9000/2015-03-31/functions/function/invocations
+# body: {"image_b64": "<base64 PNG>"}
 ```
 
 `prepare` writes cropped PNGs to `data/processed/` (never overwrites
@@ -129,14 +142,16 @@ checkpoints on val. `train-classifier` and `train-padim` log to local
 MLflow (SQLite). `calibrate` fuses both models, sweeps the cost
 threshold, and writes `models/threshold.json`. `export` writes
 `models/classifier.onnx`, `models/padim-backbone.onnx`, and
-`models/onnx-manifest.json` (onnxruntime vs PyTorch check). Re-runs of `prepare`
+`models/onnx-manifest.json` (onnxruntime vs PyTorch check). `predict`
+runs the same runtime as the Lambda handler. Re-runs of `prepare`
 skip existing crops (`--overwrite` to force).
 
 ## Repo structure
 
 ```
 brief/                 # identity, objective, original briefs (French)
-src/valeo_qc/          # preprocessing, decision, classifier, PaDiM, calibrate, export
+src/valeo_qc/          # preprocessing, models, ONNX export, Lambda runtime
+deployment/            # Dockerfile + lambda_handler (no PyTorch)
 tests/
 docs/presentations/    # Marp sources (recruiter + technical, FR/EN)
 ```

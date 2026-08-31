@@ -187,11 +187,25 @@ def _cmd_export(args: argparse.Namespace) -> None:
         print(f"  verif {name}: max_abs={check['max_abs']:.3g}")
 
 
+def _cmd_predict(args: argparse.Namespace) -> None:
+    """Inférence locale (même runtime que Lambda)."""
+    import json
+
+    from PIL import Image
+
+    from valeo_qc.serve import Runtime
+
+    runtime = Runtime()
+    image = Image.open(args.image)
+    result = runtime.predict_pil(image, lib=args.lib)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+
+
 def main() -> None:
     """Point d'entrée principal du CLI."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser(
-        description="Contrôle qualité Valeo — prétraitement, classifieur, PaDiM, seuil, ONNX"
+        description="Contrôle qualité Valeo — prétraitement, modèles, ONNX, API"
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -305,6 +319,18 @@ def main() -> None:
         help="ne pas comparer PyTorch et onnxruntime sur un dummy",
     )
     export_p.set_defaults(func=_cmd_export)
+
+    pred_p = sub.add_parser(
+        "predict",
+        help="inférence locale ONNX (même logique que le handler Lambda)",
+    )
+    pred_p.add_argument("image", help="PNG/JPEG (déjà recadré, sauf si --lib)")
+    pred_p.add_argument(
+        "--lib",
+        default=None,
+        help="Die01–Die04 : rotate+crop comme le notebook",
+    )
+    pred_p.set_defaults(func=_cmd_predict)
 
     args = parser.parse_args()
     args.func(args)

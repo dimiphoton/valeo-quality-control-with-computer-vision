@@ -1,5 +1,12 @@
 # Journal de développement
 
+## 2026-08-31 — API Lambda locale
+
+- Handler `deployment/lambda_handler.py` + `valeo_qc.serve` (ONNX, pas
+  PyTorch). Image Docker `public.ecr.aws/lambda/python:3.12`.
+- PaDiM seulement si pickle + `score-scale.json` (min-max figé). Sinon
+  classifieur seul. SAM reporté à l'étape déploiement AWS.
+
 ## 2026-08-31 — Export ONNX
 
 - `models/classifier.onnx` (resnest50d, 97 Mo) : max_abs = 0 vs PyTorch.

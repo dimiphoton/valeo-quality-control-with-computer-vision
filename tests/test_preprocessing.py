@@ -13,6 +13,7 @@ from valeo_qc.preprocessing import (
     ROT_CROP,
     class_weights,
     crop_frame,
+    crop_pil,
     prepare_dataset,
     rotate_and_crop,
     stratified_split,
@@ -73,6 +74,17 @@ def test_rotate_and_crop_lib_inconnu(tmp_path: Path) -> None:
     Image.new("L", (10, 10)).save(source)
     with pytest.raises(KeyError, match="lib inconnu"):
         rotate_and_crop(source, tmp_path / "out.png", lib="Die99")
+
+
+def test_crop_pil_meme_taille_que_fichier(tmp_path: Path) -> None:
+    """crop_pil (mémoire) a la même taille que le PNG écrit."""
+    source = tmp_path / "raw.png"
+    dest = tmp_path / "out.png"
+    Image.new("RGB", (800, 900), color=(10, 20, 30)).save(source)
+    rotate_and_crop(source, dest, lib="Die01")
+    on_disk = Image.open(dest)
+    in_mem = crop_pil(Image.open(source), "Die01")
+    assert in_mem.size == on_disk.size
 
 
 def _write_gray_png(path: Path) -> None:
