@@ -28,6 +28,12 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.models import Wide_ResNet50_2_Weights, wide_resnet50_2
 
+from valeo_qc.anomaly_numpy import (
+    invert_covariance,
+    mahalanobis_maps,
+    minmax_image_scores,
+    raw_image_scores,
+)
 from valeo_qc.classifier import SplitImageDataset, get_device, load_split
 from valeo_qc.decision_logic import ID_TO_LABEL, N_KNOWN_CLASSES
 from valeo_qc.preprocessing import PROCESSED_DIR, PROJECT_ROOT, RAW_DIR
@@ -155,74 +161,6 @@ class PadimBackbone(nn.Module):
         return torch.index_select(concatenated, 1, self.idx)
 
 
-def invert_covariance(cov: np.ndarray, chunk: int = 32) -> np.ndarray:
-    """Inverse chaque covariance spatiale ``(C, C, HW)`` → ``(C, C, HW)``.
-
-    Par paquets pour ne pas allouer un ``(HW, C, C)`` float64 d'un coup
-    (~2,5 Go si C=550).
-
-    Parameters
-    ----------
-    cov
-        Tenseur float ``(C, C, HW)``.
-    chunk
-        Nombre de patches inversés ensemble.
-
-    Returns
-    -------
-    numpy.ndarray
-        Inverses, même forme, float32. ``pinv`` si une tranche est singulière.
-    """
-    _channels, _, hw = cov.shape
-    out = np.empty_like(cov, dtype=np.float32)
-    for start in range(0, hw, chunk):
-        end = min(start + chunk, hw)
-        stacked = np.moveaxis(cov[:, :, start:end], -1, 0).astype(np.float64)
-        try:
-            inverted = np.linalg.inv(stacked)
-        except np.linalg.LinAlgError:
-            LOGGER.warning("covariance singulière patches %s-%s, repli pinv", start, end)
-            inverted = np.linalg.pinv(stacked)
-        out[:, :, start:end] = np.moveaxis(inverted.astype(np.float32), 0, -1)
-    return out
-
-
-def mahalanobis_maps(
-    embeddings: np.ndarray,
-    mean: np.ndarray,
-    cov_inv: np.ndarray,
-) -> np.ndarray:
-    """Cartes de distance ``(B, H, W)`` pour des embeddings ``(B, C, H, W)``.
-
-    Parameters
-    ----------
-    embeddings
-        Features réduites.
-    mean
-        Moyenne PaDiM ``(C, HW)``.
-    cov_inv
-        Précision ``(C, C, HW)``.
-
-    Returns
-    -------
-    numpy.ndarray
-        Distances de Mahalanobis par patch.
-    """
-    batch, channels, height, width = embeddings.shape
-    hw = height * width
-    flat = embeddings.reshape(batch, channels, hw)
-    diff = flat - mean[np.newaxis, :, :]
-    dist = np.empty((batch, hw), dtype=np.float64)
-    chunk = 64
-    for start in range(0, hw, chunk):
-        end = min(start + chunk, hw)
-        piece = diff[:, :, start:end]
-        inv = cov_inv[:, :, start:end]
-        precision_dot = np.einsum("cdi,bdi->bci", inv, piece, optimize=True)
-        dist[:, start:end] = np.einsum("bci,bci->bi", piece, precision_dot, optimize=True)
-    return dist.reshape(batch, height, width)
-
-
 def _mahalanobis_from_tensors(
     embeddings: torch.Tensor,
     mean: torch.Tensor,
@@ -255,35 +193,6 @@ def upsample_and_smooth(
     )
     maps = upsampled.squeeze(1).numpy()
     return gaussian_filter(maps, sigma=(0.0, sigma, sigma))
-
-
-def minmax_image_scores(score_maps: np.ndarray) -> tuple[np.ndarray, float, float]:
-    """Min-max sur tout le lot, puis max spatial → un score par image.
-
-    Parameters
-    ----------
-    score_maps
-        ``(N, H, W)`` déjà lissées.
-
-    Returns
-    -------
-    tuple
-        Scores ``(N,)``, min et max bruts du lot.
-    """
-    min_score = float(score_maps.min())
-    max_score = float(score_maps.max())
-    span = max_score - min_score
-    if span <= 0:
-        normalized = np.zeros(score_maps.shape, dtype=np.float64)
-    else:
-        normalized = (score_maps - min_score) / span
-    image_scores = normalized.reshape(normalized.shape[0], -1).max(axis=1)
-    return image_scores.astype(np.float64), min_score, max_score
-
-
-def raw_image_scores(score_maps: np.ndarray) -> np.ndarray:
-    """Max spatial sans min-max (échelle Mahalanobis, comparable d'un run à l'autre)."""
-    return score_maps.reshape(score_maps.shape[0], -1).max(axis=1).astype(np.float64)
 
 
 def fit_gaussian(

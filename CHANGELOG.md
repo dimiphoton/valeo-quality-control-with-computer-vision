@@ -2,6 +2,9 @@
 
 ## [Non publié]
 
+- API Lambda locale : handler API Gateway + image Docker (Python 3.12,
+  onnxruntime, sans PyTorch). Sans pickle PaDiM ni min-max figé, l'API
+  classe les 6 défauts connus. SAM n'est pas installé (étape AWS).
 - Export ONNX : `classifier.onnx` (resnest50d, 97 Mo, max_abs=0 vs
   PyTorch) et `padim-backbone.onnx` (WRN-50-2, 95 Mo, max_abs 2e-6).
   La gaussienne PaDiM reste un pickle. Inférence onnxruntime dans un

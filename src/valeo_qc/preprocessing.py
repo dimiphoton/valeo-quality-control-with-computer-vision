@@ -157,16 +157,45 @@ def rotate_and_crop(
         Si ``source`` n'existe pas.
     """
     table = ROT_CROP if rot_crop is None else rot_crop
-    if lib not in table:
-        raise KeyError(f"lib inconnu : {lib!r} (attendu {sorted(table)})")
-    angle, crop_box = table[lib]
     dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     with Image.open(source) as image:
-        rotated = image.rotate(angle, expand=True)
-        cropped = rotated.crop(crop_box)
+        cropped = crop_pil(image, lib, rot_crop=table)
         cropped.save(dest, format="PNG")
     return dest
+
+
+def crop_pil(
+    image: Image.Image,
+    lib: str,
+    rot_crop: dict[str, tuple[float, tuple[int, int, int, int]]] | None = None,
+) -> Image.Image:
+    """Même rotate+crop que :func:`rotate_and_crop`, en mémoire (API).
+
+    Parameters
+    ----------
+    image
+        Image source RGB.
+    lib
+        ``Die01`` … ``Die04``.
+    rot_crop
+        Table angle / crop. Défaut : :data:`ROT_CROP`.
+
+    Returns
+    -------
+    PIL.Image.Image
+        Image recadrée.
+
+    Raises
+    ------
+    KeyError
+        Si ``lib`` est inconnu.
+    """
+    table = ROT_CROP if rot_crop is None else rot_crop
+    if lib not in table:
+        raise KeyError(f"lib inconnu : {lib!r} (attendu {sorted(table)})")
+    angle, crop_box = table[lib]
+    return image.rotate(angle, expand=True).crop(crop_box)
 
 
 def load_test_meta(csv_path: Path | None = None) -> pd.DataFrame:
