@@ -201,6 +201,25 @@ def _cmd_predict(args: argparse.Namespace) -> None:
     print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
+def _cmd_deploy(args: argparse.Namespace) -> None:
+    """Alarme de facturation puis ECR/Lambda (dry-run par défaut)."""
+    from valeo_qc.aws_deploy import DeployError, deploy
+
+    try:
+        text = deploy(
+            email=args.email,
+            dry_run=not args.apply,
+            api_region=args.region,
+            image_uri=args.image_uri,
+            limit_usd=args.limit_usd,
+            skip_docker=args.skip_docker,
+        )
+    except (DeployError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        raise SystemExit(1) from exc
+    print(text, end="")
+
+
 def main() -> None:
     """Point d'entrée principal du CLI."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -331,6 +350,30 @@ def main() -> None:
         help="Die01–Die04 : rotate+crop comme le notebook",
     )
     pred_p.set_defaults(func=_cmd_predict)
+
+    dep_p = sub.add_parser(
+        "deploy",
+        help="AWS : alarme de facturation d'abord, puis ECR + Lambda (dry-run)",
+    )
+    dep_p.add_argument(
+        "--email",
+        required=True,
+        help="destinataire SNS / budget (obligatoire même en dry-run)",
+    )
+    dep_p.add_argument(
+        "--apply",
+        action="store_true",
+        help="exécuter AWS CLI (sinon affiche seulement le plan)",
+    )
+    dep_p.add_argument("--region", default="eu-west-3", help="région ECR/Lambda")
+    dep_p.add_argument("--image-uri", default=None, help="URI ECR déjà poussée")
+    dep_p.add_argument("--limit-usd", type=int, default=1, help="plafond alarme USD")
+    dep_p.add_argument(
+        "--skip-docker",
+        action="store_true",
+        help="ne pas builder/pusher l'image (déjà dans ECR)",
+    )
+    dep_p.set_defaults(func=_cmd_deploy)
 
     args = parser.parse_args()
     args.func(args)

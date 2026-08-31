@@ -17,3 +17,4 @@
 | 2026-08-31 | ONNX opset 18, gaussienne PaDiM hors graphe | Un seul graphe classifieur+PaDiM, TorchScript | `col2im` (fold) exige l'opset 18 ; la cov 1,2 Go n'est pas un réseau. Concat PaDiM = upsample nearest (équivalent au unfold/fold officiel). |
 | 2026-08-31 | Inférence ONNX en **sous-processus** | onnxruntime in-process | Sous Windows, charger onnxruntime après torch CUDA (pytest) provoque un access violation. |
 | 2026-08-31 | Image Lambda **sans PyTorch**, SAM plus tard | SAM local dès cette étape | SAM reste à valider. L'image AWS Lambda + RIE suffit pour tester le handler. PaDiM optionnel (pickle 1,2 Go + min-max figé). |
+| 2026-08-31 | CloudFormation brut, **alarme billing d'abord**, Function URL | SAM + API Gateway | SAM / AWS CLI non installés (à valider). La métrique `AWS/Billing` n'existe qu'en `us-east-1`. Function URL = pas de coût API Gateway. `--apply` refuse l'API si la stack billing manque. |
