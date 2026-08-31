@@ -137,11 +137,39 @@ def _cmd_train_padim(args: argparse.Namespace) -> None:
         print(f"  {name}: raw_mean={stats['raw_mean']:.3f} n={stats['n']}")
 
 
+def _fmt_point(name: str, point: dict) -> str:
+    """Une ligne PWA / faux drift."""
+    return (
+        f"{name}: seuil={point['threshold']:.3f} PWA={point['pwa']:.6f} "
+        f"faux_drift={point['n_false_drift']} "
+        f"(GOOD={point['n_false_drift_good']}) "
+        f"err_classe={point['n_class_error']}"
+    )
+
+
+def _cmd_calibrate(args: argparse.Namespace) -> None:
+    """Seuil de coût sur le val + comparaison officiel / nôtre."""
+    from valeo_qc.calibrate import calibrate
+
+    report = calibrate(batch_size=args.batch_size, include_ours=not args.official_only)
+    op = report["operating_point"]
+    print(f"exporté {op['name']} seuil={op['threshold']} PWA={op['pwa']:.6f}")
+    print(op["reason"])
+    for pipe_name, pipe in report["pipelines"].items():
+        print(f"— {pipe_name} (n={pipe['n']})")
+        for key, point in pipe["points"].items():
+            print(f"  {_fmt_point(key, point)}")
+    artifacts = report.get("artifacts") or {}
+    for key, path in artifacts.items():
+        if path:
+            print(f"{key}: {path}")
+
+
 def main() -> None:
     """Point d'entrée principal du CLI."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser(
-        description="Contrôle qualité Valeo — prétraitement, classifieur, PaDiM"
+        description="Contrôle qualité Valeo — prétraitement, classifieur, PaDiM, seuil"
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -221,6 +249,18 @@ def main() -> None:
     train_padim_p.add_argument("--batch-size", type=int, default=16)
     train_padim_p.add_argument("--seed", type=int, default=1024)
     train_padim_p.set_defaults(func=_cmd_train_padim)
+
+    cal_p = sub.add_parser(
+        "calibrate",
+        help="seuil de coût (PWA) sur le val, compare officiel et nôtre",
+    )
+    cal_p.add_argument("--batch-size", type=int, default=16)
+    cal_p.add_argument(
+        "--official-only",
+        action="store_true",
+        help="ne pas scorer les checkpoints locaux",
+    )
+    cal_p.set_defaults(func=_cmd_calibrate)
 
     args = parser.parse_args()
     args.func(args)

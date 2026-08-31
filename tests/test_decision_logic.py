@@ -10,10 +10,13 @@ from valeo_qc.decision_logic import (
     COST_MATRIX,
     DRIFT_CLASS,
     decide_class,
+    decide_from_arrays,
     decide_on_frame,
+    decision_stats,
     encode_label,
     find_optimal_threshold,
     penalty_weighted_accuracy,
+    threshold_sweep,
 )
 
 
@@ -88,3 +91,51 @@ def test_find_optimal_threshold_choisit_le_seuil_qui_isole_le_drift() -> None:
     assert 0.0 < threshold <= 0.5
     pred = decide_on_frame(frame, threshold=threshold)
     np.testing.assert_array_equal(pred, [6, 0])
+
+
+def test_decision_stats_separe_faux_drift_et_confusion() -> None:
+    """GOOD→drift et défaut→défaut n'ont pas la même pénalité."""
+    stats = decision_stats([0, 4, 4], [6, 2, 4])
+    assert stats["n_false_drift"] == 1
+    assert stats["n_false_drift_good"] == 1
+    assert stats["n_class_error"] == 1
+    assert stats["penalty_false_drift"] == 10000
+    assert stats["penalty_class_error"] == 1
+    assert stats["n_missed_drift"] == 0
+
+
+def test_decide_from_arrays_aligne_decide_class() -> None:
+    """La version vectorisée colle à decide_class exemple par exemple."""
+    p_drift = np.array([0.9, 0.1])
+    probs = np.array(
+        [
+            [0.9, 0.02, 0.02, 0.02, 0.02, 0.02],
+            [0.1, 0.1, 0.1, 0.1, 0.5, 0.1],
+        ]
+    )
+    pred = decide_from_arrays(p_drift, probs, threshold=0.5)
+    assert pred[0] == DRIFT_CLASS
+    assert pred[1] == 4
+
+
+def test_threshold_sweep_pwa_croit_quand_on_arrete_de_flagger() -> None:
+    """Sans drift réel, un seuil trop bas fait baisser la PWA."""
+    frame = pd.DataFrame(
+        {
+            "p_drift": [0.8, 0.1],
+            "p0": [0.9, 0.9],
+            "p1": [0.02, 0.02],
+            "p2": [0.02, 0.02],
+            "p3": [0.02, 0.02],
+            "p4": [0.02, 0.02],
+            "p5": [0.02, 0.02],
+        }
+    )
+    y_true = [0, 0]
+    sweep = threshold_sweep(frame, y_true, thresholds=[0.0, 0.5, 1.0])
+    pwa_low = float(sweep.loc[sweep["threshold"] == 0.0, "pwa"].iloc[0])
+    pwa_high = float(sweep.loc[sweep["threshold"] == 1.0, "pwa"].iloc[0])
+    assert pwa_high > pwa_low
+    assert int(sweep.loc[sweep["threshold"] == 0.0, "n_false_drift_good"].iloc[0]) == 2
+    assert int(sweep.loc[sweep["threshold"] == 0.5, "n_false_drift_good"].iloc[0]) == 1
+

@@ -12,6 +12,7 @@ dependencies = [
     "timm>=1.0",
     "mlflow>=2.14",
     "scipy>=1.11",
+    "matplotlib>=3.8",
 ]
 
 [project.optional-dependencies]

@@ -2,6 +2,9 @@
 
 ## [Non publié]
 
+- Calibration du seuil : le val n'a pas de drift, donc le max PWA éteint
+  PaDiM. Seuil exporté **protège-GOOD** = 0,611 (0 GOOD→drift). À 0,5
+  l'officiel flag 13 GOOD (PWA 0,989 vs 0,999).
 - PaDiM : reproduction du pickle officiel (WRN-50-2, pas anomalib) et
   réentraînement sur le split train. Val : scores bruts moyens 144
   (officiel) / 148 (nôtre) ; Missing reste la classe la plus « in-distribution ».

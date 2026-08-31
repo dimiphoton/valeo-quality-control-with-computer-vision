@@ -1,5 +1,14 @@
 # Journal de développement
 
+## 2026-08-31 — Seuil de coût
+
+- Val sans `drift` : max PWA = seuil 1 (PaDiM éteint). Le 0,5 du notebook
+  flag 57 images officielles dont **13 GOOD** (pénalité 174 000).
+- Seuil exporté **protège-GOOD** = 0,611 (officiel) : 0 GOOD flaggé,
+  PWA 0,999 vs 0,989 à 0,5. Notre pipeline à 0,5 : PWA 0,994 (3 GOOD).
+- Artefacts : `models/threshold.json`, `pictures/experiments/pwa-vs-threshold.png`.
+  MLflow `valeo-qc-decision`.
+
 ## 2026-08-30 — Détecteur PaDiM
 
 - Pas d'anomalib : le notebook officiel est un PaDiM maison (WideResNet-50-2,

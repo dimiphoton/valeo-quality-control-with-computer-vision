@@ -154,6 +154,44 @@ def penalty_weighted_accuracy(
     return 1.0 - total / (n * max_penalty)
 
 
+def decide_from_arrays(
+    p_drift: np.ndarray,
+    class_probs: np.ndarray,
+    threshold: float = DEFAULT_THRESHOLD,
+) -> np.ndarray:
+    """Version vectorisée de :func:`decide_class`.
+
+    Parameters
+    ----------
+    p_drift
+        Scores d'anomalie ``(n,)``.
+    class_probs
+        Probabilités ``(n, 6)``.
+    threshold
+        Au-dessus : ``drift``.
+
+    Returns
+    -------
+    numpy.ndarray
+        Prédictions ``(n,)``.
+
+    Raises
+    ------
+    ValueError
+        Si les formes ne matchent pas.
+    """
+    drift = np.asarray(p_drift, dtype=np.float64).reshape(-1)
+    probs = np.asarray(class_probs, dtype=np.float64)
+    if probs.ndim != 2 or probs.shape[1] != N_KNOWN_CLASSES:
+        raise ValueError(
+            f"class_probs doit être (n, {N_KNOWN_CLASSES}), reçu {probs.shape}"
+        )
+    if probs.shape[0] != drift.shape[0]:
+        raise ValueError("p_drift et class_probs n'ont pas la même longueur")
+    pred = np.argmax(probs, axis=1).astype(np.int64)
+    return np.where(drift > threshold, DRIFT_CLASS, pred)
+
+
 def decide_on_frame(
     frame: pd.DataFrame,
     threshold: float = DEFAULT_THRESHOLD,
@@ -173,11 +211,59 @@ def decide_on_frame(
         Prédictions (n,).
     """
     prob_cols = [f"p{i}" for i in range(N_KNOWN_CLASSES)]
-    preds = [
-        decide_class(row["p_drift"], row[prob_cols], threshold=threshold)
-        for _, row in frame.iterrows()
-    ]
-    return np.asarray(preds, dtype=np.int64)
+    return decide_from_arrays(
+        frame["p_drift"].to_numpy(),
+        frame[prob_cols].to_numpy(),
+        threshold=threshold,
+    )
+
+
+def decision_stats(
+    y_true: Iterable[int],
+    y_pred: Iterable[int],
+    penalty_matrix: np.ndarray | None = None,
+) -> dict[str, float | int]:
+    """PWA, pénalités et comptes d'erreurs (faux drift, confusion 0–5).
+
+    Parameters
+    ----------
+    y_true, y_pred
+        Labels 0–6.
+    penalty_matrix
+        Défaut : :data:`COST_MATRIX`.
+
+    Returns
+    -------
+    dict
+        ``pwa``, ``total_penalty``, comptes ``n_*``.
+    """
+    matrix = COST_MATRIX if penalty_matrix is None else np.asarray(penalty_matrix)
+    true = np.asarray(list(y_true), dtype=np.int64)
+    pred = np.asarray(list(y_pred), dtype=np.int64)
+    if true.shape != pred.shape:
+        raise ValueError("y_true et y_pred doivent avoir la même longueur")
+    n = int(true.size)
+    penalties = np.zeros(n, dtype=np.float64) if n else np.asarray([], dtype=np.float64)
+    if n:
+        penalties = matrix[true, pred]
+        penalties = np.where(true == pred, 0.0, penalties)
+    false_drift = (pred == DRIFT_CLASS) & (true != DRIFT_CLASS)
+    missed_drift = (true == DRIFT_CLASS) & (pred != DRIFT_CLASS)
+    class_error = (true != pred) & (true != DRIFT_CLASS) & (pred != DRIFT_CLASS)
+    pwa = penalty_weighted_accuracy(true, pred, penalty_matrix=matrix)
+    return {
+        "n": n,
+        "pwa": float(pwa),
+        "total_penalty": float(penalties.sum()) if n else 0.0,
+        "n_pred_drift": int((pred == DRIFT_CLASS).sum()) if n else 0,
+        "n_false_drift": int(false_drift.sum()) if n else 0,
+        "n_false_drift_good": int(((true == 0) & (pred == DRIFT_CLASS)).sum()) if n else 0,
+        "n_missed_drift": int(missed_drift.sum()) if n else 0,
+        "n_class_error": int(class_error.sum()) if n else 0,
+        "penalty_false_drift": float(penalties[false_drift].sum()) if n else 0.0,
+        "penalty_missed_drift": float(penalties[missed_drift].sum()) if n else 0.0,
+        "penalty_class_error": float(penalties[class_error].sum()) if n else 0.0,
+    }
 
 
 def find_optimal_threshold(
@@ -207,12 +293,51 @@ def find_optimal_threshold(
     else:
         grid = np.asarray(list(thresholds), dtype=np.float64)
     y = np.asarray(list(y_true), dtype=np.int64)
+    p_drift = frame["p_drift"].to_numpy(dtype=np.float64)
+    probs = frame[[f"p{i}" for i in range(N_KNOWN_CLASSES)]].to_numpy(dtype=np.float64)
     best_threshold = float(grid[0])
     best_pwa = -np.inf
     for threshold in grid:
-        pred = decide_on_frame(frame, threshold=float(threshold))
+        pred = decide_from_arrays(p_drift, probs, threshold=float(threshold))
         pwa = penalty_weighted_accuracy(y, pred)
         if pwa > best_pwa:
             best_pwa = pwa
             best_threshold = float(threshold)
     return best_threshold, float(best_pwa)
+
+
+def threshold_sweep(
+    frame: pd.DataFrame,
+    y_true: Iterable[int],
+    thresholds: Iterable[float] | None = None,
+) -> pd.DataFrame:
+    """PWA et pénalités pour chaque seuil.
+
+    Parameters
+    ----------
+    frame
+        Colonnes ``p_drift``, ``p0`` … ``p5``.
+    y_true
+        Labels 0–6.
+    thresholds
+        Grille. Défaut : 0, 0.02, …, 1.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Une ligne par seuil.
+    """
+    if thresholds is None:
+        grid = np.linspace(0.0, 1.0, 51)
+    else:
+        grid = np.asarray(list(thresholds), dtype=np.float64)
+    y = np.asarray(list(y_true), dtype=np.int64)
+    p_drift = frame["p_drift"].to_numpy(dtype=np.float64)
+    probs = frame[[f"p{i}" for i in range(N_KNOWN_CLASSES)]].to_numpy(dtype=np.float64)
+    rows = []
+    for threshold in grid:
+        pred = decide_from_arrays(p_drift, probs, threshold=float(threshold))
+        stats = decision_stats(y, pred)
+        stats["threshold"] = float(threshold)
+        rows.append(stats)
+    return pd.DataFrame(rows)
