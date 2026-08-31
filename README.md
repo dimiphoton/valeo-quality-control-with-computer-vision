@@ -108,8 +108,22 @@ The PaDiM Gaussian (mean/cov, ~1.2 GB) stays a pickle — it is not a
 network. Single-image inference must freeze the notebook's batch min-max
 (otherwise the score is always 1). The local Lambda image runs the
 classifier without PyTorch; PaDiM is on only if the pickle and a frozen
-`models/score-scale.json` are present. AWS SAM is the next step (billing
-alarm first).
+`models/score-scale.json` are present.
+
+AWS deploy is CloudFormation (not SAM). Billing alarm in `us-east-1`
+**before** ECR/Lambda. Default is dry-run; `--apply` needs an AWS CLI
+already on the machine (this repo does not install it).
+
+| Resource | Role | Idle cost |
+|---|---|---|
+| CloudWatch billing alarm + AWS Budget ($1) | Gate before any paid stack | ~$0 (free-tier budgets) |
+| ECR `valeo-qc` (~400 MB image) | Container for Lambda | ~$0 under 500 MB-month |
+| Lambda 2 GB, timeout 60 s, reserved concurrency 1 | Inference | ~$0 at rest (1 M req + 400 k GB-s) |
+| Function URL (no API Gateway) | Public POST, demo only | $0 extra |
+
+Turn on **Receive Billing Alerts** in the Billing console once; confirm
+the SNS email. The Function URL has `AuthType: NONE` — demo, not a
+production lock.
 
 ## Reproduce
 
@@ -124,6 +138,7 @@ python -m valeo_qc.cli train-padim
 python -m valeo_qc.cli calibrate
 python -m valeo_qc.cli export
 python -m valeo_qc.cli predict path/to/image.png
+python -m valeo_qc.cli deploy --email you@example.com
 mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
@@ -136,6 +151,20 @@ docker run --rm -p 9000:8080 valeo-qc-lambda
 # body: {"image_b64": "<base64 PNG>"}
 ```
 
+AWS (prints the plan; does not call the account unless `--apply`):
+
+```bash
+python -m valeo_qc.cli deploy --email you@example.com
+# 1. billing stack in us-east-1 (alarm + $1 budget)
+# 2. ECR, then docker push
+# 3. Lambda image + Function URL (eu-west-3)
+# python -m valeo_qc.cli deploy --email you@example.com --apply
+```
+
+`--apply` requires AWS CLI + credentials. It deploys billing first and
+aborts before ECR/Lambda if that stack is missing. Confirm the SNS
+subscription in your inbox.
+
 `prepare` writes cropped PNGs to `data/processed/` (never overwrites
 `data/raw/`). `eval-classifier` / `eval-padim` score the official
 checkpoints on val. `train-classifier` and `train-padim` log to local
@@ -143,15 +172,16 @@ MLflow (SQLite). `calibrate` fuses both models, sweeps the cost
 threshold, and writes `models/threshold.json`. `export` writes
 `models/classifier.onnx`, `models/padim-backbone.onnx`, and
 `models/onnx-manifest.json` (onnxruntime vs PyTorch check). `predict`
-runs the same runtime as the Lambda handler. Re-runs of `prepare`
+runs the same runtime as the Lambda handler. `deploy` prints the
+CloudFormation order (billing first). Re-runs of `prepare`
 skip existing crops (`--overwrite` to force).
 
 ## Repo structure
 
 ```
 brief/                 # identity, objective, original briefs (French)
-src/valeo_qc/          # preprocessing, models, ONNX export, Lambda runtime
-deployment/            # Dockerfile + lambda_handler (no PyTorch)
+src/valeo_qc/          # preprocessing, models, ONNX export, Lambda runtime, AWS plan
+deployment/            # Dockerfile, handler, CloudFormation (billing then ECR/API)
 tests/
 docs/presentations/    # Marp sources (recruiter + technical, FR/EN)
 ```

@@ -2,6 +2,11 @@
 
 ## [Non publié]
 
+- Déploiement AWS (CloudFormation, pas SAM) : stack billing `us-east-1`
+  (alarme EstimatedCharges + budget 1 USD) **avant** ECR et Lambda.
+  Function URL, 2 Go, 1 exécution concurrente. CLI
+  `python -m valeo_qc.cli deploy --email …` (dry-run par défaut ;
+  `--apply` exige un AWS CLI déjà présent, sans l'installer).
 - API Lambda locale : handler API Gateway + image Docker (Python 3.12,
   onnxruntime, sans PyTorch). Sans pickle PaDiM ni min-max figé, l'API
   classe les 6 défauts connus. SAM n'est pas installé (étape AWS).

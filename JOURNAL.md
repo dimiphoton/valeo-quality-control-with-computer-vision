@@ -1,5 +1,14 @@
 # Journal de développement
 
+## 2026-08-31 — Déploiement AWS (alarme d'abord)
+
+- Templates CloudFormation : `billing.yaml` (us-east-1, SNS + alarme
+  EstimatedCharges + budget 1 USD), `ecr.yaml`, `api.yaml` (Lambda
+  image + Function URL, pas d'API Gateway).
+- CLI `deploy` : dry-run par défaut ; `--apply` refuse d'enchaîner
+  ECR/Lambda si la stack billing n'existe pas. AWS CLI / SAM non
+  installés (pas d'appel réel au compte).
+
 ## 2026-08-31 — API Lambda locale
 
 - Handler `deployment/lambda_handler.py` + `valeo_qc.serve` (ONNX, pas

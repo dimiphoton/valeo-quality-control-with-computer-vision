@@ -10,5 +10,5 @@ sur la matrice de coût du challenge, puis exposer une API d'inférence.
 - [x] Calibration du seuil sur le coût métier + comparaison chiffrée au benchmark
 - [x] Export ONNX
 - [x] API Lambda locale (handler + image Docker)
-- [ ] Déploiement AWS (alarme CloudWatch d'abord)
+- [x] Déploiement AWS (alarme CloudWatch d'abord)
 - [ ] Présentations recruteur / technique FR+EN

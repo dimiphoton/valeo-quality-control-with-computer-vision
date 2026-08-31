@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Valeo QC — Lambda image + Function URL. Exige la stack billing
+  (us-east-1) et une image déjà poussée dans ECR.
+
+Parameters:
+  ImageUri:
+    Type: String
+    Description: URI de l'image (compte.dkr.ecr.region.amazonaws.com/valeo-qc:tag)
+  MemorySizeMb:
+    Type: Number
+    Default: 2048
+    MinValue: 512
+    MaxValue: 3008
+  TimeoutSeconds:
+    Type: Number
+    Default: 60
+    MinValue: 10
+    MaxValue: 120
+
+Resources:
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: valeo-qc-lambda-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  PredictFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: valeo-qc-predict
+      PackageType: Image
+      Code:
+        ImageUri: !Ref ImageUri
+      Role: !GetAtt ExecutionRole.Arn
+      MemorySize: !Ref MemorySizeMb
+      Timeout: !Ref TimeoutSeconds
+      Architectures:
+        - x86_64
+      ReservedConcurrentExecutions: 1
+      Environment:
+        Variables:
+          VALEO_MODELS_DIR: /var/task/models
+
+  PredictUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      AuthType: NONE
+      Cors:
+        AllowOrigins:
+          - "*"
+        AllowMethods:
+          - POST
+        AllowHeaders:
+          - content-type
+      TargetFunctionArn: !GetAtt PredictFunction.Arn
+
+  PredictUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref PredictFunction
+      FunctionUrlAuthType: NONE
+      Principal: "*"
+      Action: lambda:InvokeFunctionUrl
+
+Outputs:
+  FunctionArn:
+    Value: !GetAtt PredictFunction.Arn
+  FunctionUrl:
+    Description: POST JSON {image_b64, lib?}
+    Value: !GetAtt PredictUrl.FunctionUrl

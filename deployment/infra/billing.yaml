@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Valeo QC — alarme de facturation. À déployer en us-east-1 AVANT toute
+  Lambda / ECR. La métrique AWS/Billing n'existe que dans us-east-1 ;
+  activer « Receive Billing Alerts » dans la console Facturation une fois.
+
+Parameters:
+  AlertEmail:
+    Type: String
+    Description: Adresse qui reçoit les alertes (confirmer l'e-mail SNS).
+    AllowedPattern: ".+@.+"
+  MonthlyLimitUsd:
+    Type: Number
+    Default: 1
+    MinValue: 1
+    Description: Seuil d'alarme CloudWatch et plafond du budget (USD).
+
+Resources:
+  BillingTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: valeo-qc-billing
+      Subscription:
+        - Endpoint: !Ref AlertEmail
+          Protocol: email
+
+  EstimatedChargesAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: valeo-qc-estimated-charges
+      AlarmDescription: Charges estimées au-dessus du plafond free-tier démo.
+      Namespace: AWS/Billing
+      MetricName: EstimatedCharges
+      Dimensions:
+        - Name: Currency
+          Value: USD
+      Statistic: Maximum
+      Period: 21600
+      EvaluationPeriods: 1
+      Threshold: !Ref MonthlyLimitUsd
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref BillingTopic
+
+  MonthlyBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: valeo-qc-monthly
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref MonthlyLimitUsd
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+
+Outputs:
+  BillingTopicArn:
+    Description: SNS des alertes de facturation
+    Value: !Ref BillingTopic
+  AlarmName:
+    Value: valeo-qc-estimated-charges
+  BudgetName:
+    Value: valeo-qc-monthly

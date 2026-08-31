@@ -13,6 +13,7 @@
   - labels de test cachés (évaluation par soumission, 2 / 24 h) ;
   - AWS free tier, alarme de facturation **avant** tout déploiement ;
   - PyTorch, MLflow, timm et scipy installés (PaDiM maison, pas anomalib).
-    AWS SAM reste à valider avant installation.
+    AWS CLI / SAM restent à valider avant installation. Le déploiement
+    versionné est du CloudFormation brut (alarme billing us-east-1 d'abord).
 
 Métier, domaine et stack se remplissent dans `brief/identite.md`.
