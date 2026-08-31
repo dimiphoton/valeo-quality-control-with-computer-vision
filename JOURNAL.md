@@ -1,5 +1,12 @@
 # Journal de développement
 
+## 2026-08-31 — Présentations FR / EN
+
+- Recruteur : 13 slides, punchline « 0 GOOD classé drift » vs 13 au seuil 0,5.
+- Technique : 16 slides, question de fusion classifieur + PaDiM sans labels drift.
+- Photos Unsplash sans visages ; graphes fond crème dans `pictures/presentations/`.
+- HTML régénéré par GitHub Actions au push sur `main` (pas de Marp local).
+
 ## 2026-08-31 — Déploiement AWS (alarme d'abord)
 
 - Templates CloudFormation : `billing.yaml` (us-east-1, SNS + alarme

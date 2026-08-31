@@ -2,6 +2,8 @@
 
 ## [Non publié]
 
+- Présentations Marp recruteur / technique, FR et EN : seuil protège-GOOD,
+  graphes de coût, photos Unsplash. HTML via GitHub Actions au push.
 - Déploiement AWS (CloudFormation, pas SAM) : stack billing `us-east-1`
   (alarme EstimatedCharges + budget 1 USD) **avant** ECR et Lambda.
   Function URL, 2 Go, 1 exécution concurrente. CLI

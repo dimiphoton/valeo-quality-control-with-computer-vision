@@ -7,11 +7,12 @@ paginate: true
 <!-- _class: cover -->
 <!-- _paginate: false -->
 
-<!-- Photo : pictures/presentations/photos/hero.png -->
-<!-- ![bg brightness:0.40](../../pictures/presentations/photos/hero.png) -->
+![bg brightness:0.40](../../pictures/presentations/photos/hero.jpg)
 
-# Classer les défauts connus
-# et détecter le drift, au coût métier
+# Comment fusionner
+# classifieur et PaDiM
+# quand le val n'a pas
+# de drift ?
 
 Machine learning · Industrie / contrôle qualité · Python / PyTorch / ONNX / AWS
 
@@ -21,62 +22,72 @@ Valeo · ENS #157 · 8 278 images train
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/motivation.png) -->
+![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
 
-# [Pourquoi
-# mesurer ça.]
+# GOOD → drift
+# coûte 10 000.
 
-[Enjeu chiffré si on l'a. Coût d'une mauvaise décision.]
+Un défaut connu mal nommé : 1.
+Un GOOD jeté comme inconnu : 10 000.
 
-**[Ce qui manque aujourd'hui pour trancher.]**
+**Sans labels drift au val, maximiser la PWA éteint PaDiM.**
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/hero.png) -->
+![bg left:46%](../../pictures/presentations/photos/hero.jpg)
 
-# [Qui consomme
-# le résultat.]
+# Qui consomme
+# le score.
 
-[Agence / régulateur]. [Opérateur / assureur / bureau d'études].
+Le jury : PWA sur un test caché (2 soumissions / 24 h).
 
-Le livrable : [indicateur, vue, reco], pas un rapport.
+Qualité usine : une API, image in, classe out.
+
+**Le livrable n'est pas un notebook. C'est un seuil exporté.**
 
 ---
 
 <!-- _class: full -->
 
-<!-- ![bg brightness:0.38](../../pictures/presentations/photos/physique.png) -->
+![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
 
-# [Mécanisme.]
+# Deux modèles,
+# une décision.
 
-[Physique ou processus : pluie → saturé → rendement, courbe de charge, Espec…]
-
----
-
-<!-- _class: split -->
-
-<!-- ![bg left:46%](../../pictures/presentations/photos/motivation.png) -->
-
-# [Logique du
-# traitement.]
-
-Sources. Grain. Unités. Jointures.
-
-Ce qu'on agrège, ce qu'on ne mélange pas.
+resnest50d : six défauts connus.
+PaDiM (WRN-50-2) : distance au nuage d'entraînement.
+Au-dessus du seuil → drift.
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/physique.png) -->
+![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
 
-# [Ce qu'on isole.]
+# Grain et
+# unités.
 
-On retire [confondant]. Ce qui reste, c'est [cible].
+PNG brut → rotate + crop selon `lib`.
+224 px classifieur, 128 px PaDiM.
 
-Pas [ce qu'on ne prétend pas].
+**On ne mélange pas le min-max du batch val
+avec une image unique en prod.**
+
+---
+
+<!-- _class: split -->
+
+![bg left:46%](../../pictures/presentations/photos/physique.jpg)
+
+# Ce qu'on isole.
+
+On retire le confondant « max PWA sur un val sans drift ».
+
+Ce qui reste : le plus petit seuil qui ne classe aucun GOOD en drift.
+
+Pas un AUC. Pas un F1 global.
 
 ---
 
@@ -84,54 +95,81 @@ Pas [ce qu'on ne prétend pas].
 
 # Périmètre.
 
-On fait [orientation : diagnostic / identifiability / décision].
+On fait un benchmark honnête, puis une API ONNX.
 
-On n'est pas [scénario 2050 / modèle tape-à-l'œil / carte sans fond].
+On n'est pas un leaderboard, ni anomalib, ni SAM.
 
 ---
 
 <!-- _class: chart -->
 
-[Baseline / tendance / donnée brute — titre-phrase.]
+Missing pèse 6 472 images. Boucle plate, 71. L'accuracy globale ment.
 
-<!-- ![w:920](../../pictures/presentations/baseline-fr.png) -->
+![w:920](../../pictures/presentations/class-counts.png)
 
 ---
 
 <!-- _class: full -->
 
-<!-- ![bg brightness:0.38](../../pictures/presentations/photos/physique.png) -->
+![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
 
-# [Résultat principal]
-# [métrique + n]
+# Le pickle officiel
+# fait 99,8 % / F1 0,973.
+
+Notre resnest50d : 99,5 % / 0,960.
+Boucle plate reste le point faible (rappel 0,86).
 
 ---
 
 <!-- _class: chart -->
 
-[Graphe de *ce* récit technique — pas forcément celui du deck RH.]
+PaDiM n'est pas calé sur les pièces saines. Missing est plus « in-distribution » que GOOD.
 
-<!-- ![w:980](../../pictures/presentations/graphique-cle-fr.png) -->
+![w:920](../../pictures/presentations/padim-by-class.png)
+
+---
+
+<!-- _class: full -->
+
+![bg brightness:0.38](../../pictures/presentations/photos/hero.jpg)
+
+# Protège-GOOD = 0,611.
+# PWA 0,999. 0 GOOD flaggé.
+
+Val n = 1 655, zéro label drift.
+Vingt faux drift, aucun GOOD.
+
+---
+
+<!-- _class: chart -->
+
+À 0,50 l'officiel paye 13 GOOD. Le seuil retenu coupe cette case. Le nôtre suit.
+
+![w:980](../../pictures/presentations/pwa-points.png)
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:40%](../../pictures/presentations/photos/hero.png) -->
+![bg left:40%](../../pictures/presentations/photos/hero.jpg)
 
-# [Robustesse.]
+# Même logique
+# sur le réentraînement.
 
-[Spatial / années / n]. [Ce qui n'est pas indépendant.]
-
-<!-- ![w:480](../../pictures/presentations/carte-ou-robustesse-fr.png) -->
+Officiel à 0,50 : 13 GOOD.
+Nous à 0,50 : 3 GOOD.
+Protège-GOOD : 0 des deux côtés.
 
 ---
 
-<!-- _class: chart -->
+<!-- _class: dark -->
 
-Pourquoi pas [modèle tape-à-l'œil] ? n = […]. [Modèle retenu + validation.]
+# Pourquoi pas le max PWA.
 
-<!-- ![w:640](../../pictures/presentations/validation-fr.png) -->
+Il met le seuil à 1 et éteint PaDiM.
+
+Pourquoi pas un transformer : le pickle officiel est un ResNeSt-50d.
+On compare à ce qu'il y a, pas à un autre sujet.
 
 ---
 
@@ -139,24 +177,24 @@ Pourquoi pas [modèle tape-à-l'œil] ? n = […]. [Modèle retenu + validation.
 
 # Où ça casse.
 
-[Limite 1.]
+Labels test cachés — pas de score local sur le drift.
 
-[Limite 2.]
+Gaussienne PaDiM : pickle 1,2 Go, hors Lambda par défaut.
 
-[Limite 3. Corrélation ≠ cause si pertinent.]
+Function URL publique, `--apply` jamais lancé sur un compte.
 
 ---
 
 <!-- _class: cta -->
 
-<!-- ![bg brightness:0.30](../../pictures/presentations/photos/cta.png) -->
+![bg brightness:0.30](../../pictures/presentations/photos/cta.jpg)
 
 # Reproduire.
 
-[Explorer en ligne](../explore-fr.html)
+[github.com/dimiphoton/valeo-quality-control-with-computer-vision](https://github.com/dimiphoton/valeo-quality-control-with-computer-vision)
 
-`python -m mon_projet run`
+`python -m valeo_qc.cli predict image.png`
 
-`python -m mon_projet dashboard`
+`python -m valeo_qc.cli deploy --email toi@exemple.fr`
 
-<!-- Badges de stack ici, pas en slide 1 recruteur. -->
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white) ![ONNX](https://img.shields.io/badge/ONNX-005CED?logo=onnx&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonwebservices&logoColor=white)

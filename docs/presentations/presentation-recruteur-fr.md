@@ -7,14 +7,14 @@ paginate: true
 <!-- _class: cover -->
 <!-- _paginate: false -->
 
-<!-- Photo : pictures/presentations/photos/hero.png -->
-<!-- ![bg brightness:0.40](../../pictures/presentations/photos/hero.png) -->
+![bg brightness:0.40](../../pictures/presentations/photos/hero.jpg)
 
 # Une caméra peut-elle
-# rater moins de pièces
-# sans laisser passer l'inconnu ?
+# jeter moins de pièces
+# saines — sans laisser
+# passer l'inconnu ?
 
-Machine learning · Industrie / contrôle qualité · Python / PyTorch / ONNX / AWS
+Machine learning · Industrie / contrôle qualité
 
 Valeo · Challenge Data ENS #157
 
@@ -22,51 +22,58 @@ Valeo · Challenge Data ENS #157
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/motivation.png) -->
+![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
 
-# [Pourquoi
-# maintenant.]
+# Une pièce saine
+# classée « inconnue »
+# coûte très cher.
 
-[Enjeu humain ou économique, en une phrase.]
+Sur une ligne électronique, le faux rebut n'est pas un détail.
 
-**[Ce qui se joue si on ne fait rien.]**
+**Le brief Valeo le chiffre : dix mille fois plus qu'un défaut mal nommé.**
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/hero.png) -->
+![bg left:46%](../../pictures/presentations/photos/hero.jpg)
 
-# [Qui doit
-# s'en servir.]
+# Qui a une décision
+# à prendre.
 
-[Agence / administration]. [Entreprise / opérateur]. [Autre acteur].
+Qualité Valeo : tenir la caméra, pas tout arrêter.
 
-**[La décision qu'ils ont à prendre.]**
+L'opérateur : jeter, laisser passer, ou ouvrir.
+
+**Le jury du challenge : scorer la même logique de coût.**
 
 ---
 
 <!-- _class: full -->
 
-<!-- ![bg brightness:0.38](../../pictures/presentations/photos/physique.png) -->
+![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
 
-# [La physique
-# en clair.]
+# La caméra ne voit
+# pas « la carte ».
+# Elle voit une fenêtre.
 
-[Mécanisme réel, sans équation : trop d'eau, trop de chaleur, un trou le soir…]
+On recadre. Six défauts ont un nom.
+Le septième — le drift — n'existe pas à l'entraînement.
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/motivation.png) -->
+![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
 
-# [Comment on
-# lit les chiffres.]
+# Comment on lit
+# les photos.
 
-D'où ça vient. À quelle maille.
+8 278 images train. Six libellés.
+Une classe, « Missing », écrase tout le reste.
 
-Ce qu'on transforme pour que le chiffre veuille dire quelque chose.
+**Le drift n'apparaît que sur le test caché.**
+On calibre donc sans jamais l'avoir vu.
 
 ---
 
@@ -74,62 +81,88 @@ Ce qu'on transforme pour que le chiffre veuille dire quelque chose.
 
 # Ce projet, ce n'est pas.
 
-Pas [non-objectif 1].
+Pas une chasse au classement.
 
-Pas [non-objectif 2].
+Pas un tableau de bord RH.
 
-**[Ce qu'on vise à la place.]**
+**Une règle de décision, puis une API d'inférence.**
 
 ---
 
 <!-- _class: full -->
 
-<!-- ![bg brightness:0.38](../../pictures/presentations/photos/physique.png) -->
+![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
 
-# [Punchline.]
-# [Un chiffre.]
+# 99,8 % de bonnes
+# étiquettes.
+# Ce n'est pas le sujet.
+
+Au seuil du notebook : 13 pièces saines
+jetées comme inconnues.
+
+---
+
+<!-- _class: full -->
+
+![bg brightness:0.38](../../pictures/presentations/photos/hero.jpg)
+
+# Zéro pièce saine
+# classée inconnue.
+
+Seuil choisi pour protéger le GOOD.
+Vingt fausses alertes. Aucune sur une pièce bonne.
 
 ---
 
 <!-- _class: chart -->
 
-[Titre-phrase : le graphe que *ce* public doit retenir.]
+Le notebook jette 13 pièces saines. Le seuil retenu, zéro.
 
-<!-- ![w:980](../../pictures/presentations/graphique-cle-fr.png) -->
+![w:920](../../pictures/presentations/good-flagged.png)
+
+---
+
+<!-- _class: chart -->
+
+Sur le jeu de contrôle, la facture tombe de 174 000 à 20 000.
+
+![w:920](../../pictures/presentations/penalty-val.png)
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:40%](../../pictures/presentations/photos/hero.png) -->
+![bg left:40%](../../pictures/presentations/photos/physique.jpg)
 
-# [Ce n'est pas
-# un artefact.]
+# Ce n'est pas
+# un artefact maison.
 
-<!-- ![w:480](../../pictures/presentations/carte-ou-robustesse-fr.png) -->
+La grille de coût vient du challenge Valeo.
+
+Le 13, c'est le modèle officiel, pas le nôtre.
 
 ---
 
 <!-- _class: actions -->
 
-<!-- ![bg right:38%](../../pictures/presentations/photos/action.png) -->
+![bg right:38%](../../pictures/presentations/photos/hero.jpg)
 
 # Lundi.
 
-**[Cible A]** — [geste concret].
+**Qualité** — garder le seuil qui protège le GOOD.
 
-**[Cible B]** — [geste concret].
+**Ops** — alarme de facturation avant tout cloud.
 
-Pas une cause unique. Un faisceau d'indices.
+Pas un modèle magique. Une règle qu'on peut défendre.
 
 ---
 
 <!-- _class: cta -->
 
-<!-- ![bg brightness:0.30](../../pictures/presentations/photos/cta.png) -->
+![bg brightness:0.30](../../pictures/presentations/photos/cta.jpg)
 
 # À vous.
 
-[Ouvrir le tableau de bord](../explore-fr.html)
+[Code source](https://github.com/dimiphoton/valeo-quality-control-with-computer-vision)
 
-[Code source](https://github.com/dimiphoton/mon-projet)
+[Challenge Valeo](https://challengedata.ens.fr/participants/challenges/157/)

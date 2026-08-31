@@ -7,14 +7,14 @@ paginate: true
 <!-- _class: cover -->
 <!-- _paginate: false -->
 
-<!-- Photo: pictures/presentations/photos/hero.png -->
-<!-- ![bg brightness:0.40](../../pictures/presentations/photos/hero.png) -->
+![bg brightness:0.40](../../pictures/presentations/photos/hero.jpg)
 
-# Can a camera miss
-# fewer parts without
-# letting unknowns through?
+# Can a camera scrap
+# fewer good parts
+# without letting
+# unknowns through?
 
-Machine learning · Industry / quality control · Python / PyTorch / ONNX / AWS
+Machine learning · Industry / quality control
 
 Valeo · Challenge Data ENS #157
 
@@ -22,51 +22,58 @@ Valeo · Challenge Data ENS #157
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/motivation.png) -->
+![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
 
-# [Why this
-# matters now.]
+# A good part labelled
+# “unknown” is the
+# expensive mistake.
 
-[Human or economic stake, in one sentence.]
+On an electronics line, a false reject is not a rounding error.
 
-**[What happens if nobody acts.]**
+**Valeo prices it ten thousand times higher than a mix-up between two known defects.**
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/hero.png) -->
+![bg left:46%](../../pictures/presentations/photos/hero.jpg)
 
-# [Who would
-# use this.]
+# Who has a call
+# to make.
 
-[Agency / public body]. [Firm / operator]. [Other actor].
+Valeo quality: keep the camera, not halt the line.
 
-**[The decision they have to make.]**
+The operator: scrap, pass, or open the bin.
+
+**The challenge jury: score that same cost logic.**
 
 ---
 
 <!-- _class: full -->
 
-<!-- ![bg brightness:0.38](../../pictures/presentations/photos/physique.png) -->
+![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
 
-# [The physics
-# in plain words.]
+# The camera does not
+# see “the board”.
+# It sees a window.
 
-[Real-world mechanism, no equation: too much rain, too much heat, an evening gap…]
+We crop. Six defects have names.
+The seventh — drift — is absent from training.
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:46%](../../pictures/presentations/photos/motivation.png) -->
+![bg left:46%](../../pictures/presentations/photos/motivation.jpg)
 
-# [How we read
-# the numbers.]
+# How to read
+# the pictures.
 
-Where they come from. At what grain.
+8,278 training images. Six labels.
+One class, “Missing”, drowns the rest.
 
-What we transform so the figure actually means something.
+**Drift shows up only on the hidden test set.**
+So we calibrate without ever seeing it.
 
 ---
 
@@ -74,62 +81,88 @@ What we transform so the figure actually means something.
 
 # This project is not.
 
-Not [non-goal 1].
+Not a leaderboard hunt.
 
-Not [non-goal 2].
+Not an HR dashboard.
 
-**[What we aim at instead.]**
+**A decision rule, then an inference API.**
 
 ---
 
 <!-- _class: full -->
 
-<!-- ![bg brightness:0.38](../../pictures/presentations/photos/physique.png) -->
+![bg brightness:0.38](../../pictures/presentations/photos/physique.jpg)
 
-# [Punchline.]
-# [One number.]
+# 99.8 % of labels
+# are right.
+# That is not the point.
+
+At the notebook threshold: 13 good parts
+thrown out as unknown.
+
+---
+
+<!-- _class: full -->
+
+![bg brightness:0.38](../../pictures/presentations/photos/hero.jpg)
+
+# Zero good parts
+# labelled unknown.
+
+The threshold is set to protect GOOD.
+Twenty false alarms. None on a healthy part.
 
 ---
 
 <!-- _class: chart -->
 
-[Sentence headline: the chart *this* audience should remember.]
+The notebook scraps 13 good parts. The chosen threshold scraps none.
 
-<!-- ![w:980](../../pictures/presentations/key-chart-en.png) -->
+![w:920](../../pictures/presentations/good-flagged.png)
+
+---
+
+<!-- _class: chart -->
+
+On the hold-out set, the cost bill drops from 174,000 to 20,000.
+
+![w:920](../../pictures/presentations/penalty-val.png)
 
 ---
 
 <!-- _class: split -->
 
-<!-- ![bg left:40%](../../pictures/presentations/photos/hero.png) -->
+![bg left:40%](../../pictures/presentations/photos/physique.jpg)
 
-# [This is not
-# an artefact.]
+# This is not
+# a homemade metric.
 
-<!-- ![w:480](../../pictures/presentations/map-or-robustness-en.png) -->
+The cost grid comes from Valeo’s challenge.
+
+The 13 is the official model, not ours.
 
 ---
 
 <!-- _class: actions -->
 
-<!-- ![bg right:38%](../../pictures/presentations/photos/action.png) -->
+![bg right:38%](../../pictures/presentations/photos/hero.jpg)
 
 # Monday.
 
-**[Target A]** — [concrete move].
+**Quality** — keep the threshold that protects GOOD.
 
-**[Target B]** — [concrete move].
+**Ops** — billing alarm before any cloud spend.
 
-Not causation. A bundle of clues.
+Not a magic model. A rule you can defend.
 
 ---
 
 <!-- _class: cta -->
 
-<!-- ![bg brightness:0.30](../../pictures/presentations/photos/cta.png) -->
+![bg brightness:0.30](../../pictures/presentations/photos/cta.jpg)
 
 # Your turn.
 
-[Open the dashboard](../explore-en.html)
+[Source code](https://github.com/dimiphoton/valeo-quality-control-with-computer-vision)
 
-[Source code](https://github.com/dimiphoton/mon-projet)
+[Valeo challenge](https://challengedata.ens.fr/participants/challenges/157/)

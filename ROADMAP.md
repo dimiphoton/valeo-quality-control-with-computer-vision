@@ -11,4 +11,4 @@ sur la matrice de coût du challenge, puis exposer une API d'inférence.
 - [x] Export ONNX
 - [x] API Lambda locale (handler + image Docker)
 - [x] Déploiement AWS (alarme CloudWatch d'abord)
-- [ ] Présentations recruteur / technique FR+EN
+- [x] Présentations recruteur / technique FR+EN
