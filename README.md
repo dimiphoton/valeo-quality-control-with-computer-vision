@@ -6,7 +6,7 @@
 | **Domain** | Industry / quality control |
 | **Stack** | ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white) ![ONNX](https://img.shields.io/badge/ONNX-005CED?logo=onnx&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonwebservices&logoColor=white) |
 | **Level** | Intermediate |
-| **Status** | in progress |
+| **Status** | v1.0 |
 
 Machine learning · Industry / quality control · Python / PyTorch / ONNX / AWS
 
@@ -192,8 +192,10 @@ docs/presentations/    # Marp sources (recruiter + technical, FR/EN)
 
 Two audiences × two languages (Marp theme `portfolio`, HTML on GitHub Pages).
 The recruiter deck is a ~6-minute pitch; the technical deck is a ~12-minute
-deep dive. They may diverge a lot — the bar is attractive and informative
-for each audience, not a mirrored pair of slides.
+deep dive. The recruiter deck asks whether a camera can scrap fewer good parts.
+The technical deck asks how to fuse the classifier and PaDiM when
+validation has no drift labels. HTML is built by GitHub Actions on push
+to `main` (do not run Marp locally).
 
 - [Recruiter overview (EN)](docs/slides/presentation-recruteur-en.html)
 - [Technical deep dive (EN)](docs/slides/presentation-technique-en.html)
