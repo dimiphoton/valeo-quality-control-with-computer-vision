@@ -24,19 +24,34 @@ Valeo · Challenge Data ENS #157
 
 ![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
-# Une pièce saine
-# classée « inconnue »
-# coûte très cher.
+# C'est un contrôle
+# qualité sur photos
+# de composants Valeo.
 
-Sur une ligne électronique, le faux rebut n'est pas un détail.
+Huit mille images. Six défauts ont un nom.
+Le septième — l'inconnu — n'apparaît qu'au test.
 
-**Le brief Valeo le chiffre : dix mille fois plus qu'un défaut mal nommé.**
+**Le livrable : une règle de décision, puis une API.**
 
 ---
 
 <!-- _class: split -->
 
 ![bg left:46%](../pictures/presentations/photos/hero.jpg)
+
+# Une pièce saine
+# classée « inconnue »
+# coûte très cher.
+
+Sur une ligne électronique, le faux rebut n'est pas un détail.
+
+**Valeo le chiffre : dix mille fois plus qu'un défaut mal nommé.**
+
+---
+
+<!-- _class: split -->
+
+![bg left:46%](../pictures/presentations/photos/physique.jpg)
 
 # Qui a une décision
 # à prendre.
@@ -57,23 +72,16 @@ L'opérateur : jeter, laisser passer, ou ouvrir.
 # pas « la carte ».
 # Elle voit une fenêtre.
 
-On recadre. Six défauts ont un nom.
-Le septième — le drift — n'existe pas à l'entraînement.
+On recadre. On nomme ce qui est connu.
+On signale ce qui n'a jamais été vu.
 
 ---
 
-<!-- _class: split -->
+<!-- _class: chart -->
 
-![bg left:46%](../pictures/presentations/photos/motivation.jpg)
+Quatre étapes, pas un seul « cerveau ».
 
-# Comment on lit
-# les photos.
-
-8 278 images train. Six libellés.
-Une classe, « Missing », écrase tout le reste.
-
-**Le drift n'apparaît que sur le test caché.**
-On calibre donc sans jamais l'avoir vu.
+![w:980](../pictures/presentations/architecture-plain-fr.png)
 
 ---
 
@@ -85,20 +93,7 @@ Pas une chasse au classement.
 
 Pas un tableau de bord RH.
 
-**Une règle de décision, puis une API d'inférence.**
-
----
-
-<!-- _class: full -->
-
-![bg brightness:0.38](../pictures/presentations/photos/physique.jpg)
-
-# 99,8 % de bonnes
-# étiquettes.
-# Ce n'est pas le sujet.
-
-Au seuil du notebook : 13 pièces saines
-jetées comme inconnues.
+**Un pipeline photo → décision → API.**
 
 ---
 
@@ -109,7 +104,7 @@ jetées comme inconnues.
 # Zéro pièce saine
 # classée inconnue.
 
-Seuil choisi pour protéger le GOOD.
+Le seuil protège le GOOD.
 Vingt fausses alertes. Aucune sur une pièce bonne.
 
 ---
@@ -119,14 +114,6 @@ Vingt fausses alertes. Aucune sur une pièce bonne.
 Le notebook jette 13 pièces saines. Le seuil retenu, zéro.
 
 ![w:920](../pictures/presentations/good-flagged.png)
-
----
-
-<!-- _class: chart -->
-
-Sur le jeu de contrôle, la facture tombe de 174 000 à 20 000.
-
-![w:920](../pictures/presentations/penalty-val.png)
 
 ---
 
@@ -163,6 +150,6 @@ Pas un modèle magique. Une règle qu'on peut défendre.
 
 # À vous.
 
-[Code source](https://github.com/dimiphoton/valeo-quality-control-with-computer-vision)
+[Les 4 decks](https://dimiphoton.github.io/valeo-quality-control-with-computer-vision/)
 
-[Challenge Valeo](https://challengedata.ens.fr/participants/challenges/157/)
+[Code source](https://github.com/dimiphoton/valeo-quality-control-with-computer-vision)

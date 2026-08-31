@@ -146,9 +146,98 @@ def class_counts() -> None:
     _save(fig, "class-counts.png")
 
 
+def _boxes_row(
+    ax: plt.Axes,
+    labels: list[str],
+    y: float,
+    box_w: float = 0.18,
+    box_h: float = 0.22,
+) -> None:
+    """Une rangée de boîtes reliées par des flèches (coordonnées 0–1)."""
+    n = len(labels)
+    xs = np.linspace(0.08, 0.92, n)
+    for i, (x, label) in enumerate(zip(xs, labels, strict=True)):
+        rect = plt.Rectangle(
+            (x - box_w / 2, y - box_h / 2),
+            box_w,
+            box_h,
+            facecolor="#fff8ee",
+            edgecolor=ACCENT,
+            linewidth=1.6,
+            transform=ax.transAxes,
+            clip_on=False,
+        )
+        ax.add_patch(rect)
+        ax.text(
+            x,
+            y,
+            label,
+            ha="center",
+            va="center",
+            color=INK,
+            fontsize=11,
+            fontweight="normal",
+            transform=ax.transAxes,
+            wrap=True,
+        )
+        if i < n - 1:
+            x0 = x + box_w / 2 + 0.01
+            x1 = xs[i + 1] - box_w / 2 - 0.01
+            ax.annotate(
+                "",
+                xy=(x1, y),
+                xytext=(x0, y),
+                xycoords=ax.transAxes,
+                textcoords=ax.transAxes,
+                arrowprops={"arrowstyle": "->", "color": GOLD, "lw": 1.8},
+            )
+
+
+def architecture_plain(lang: str) -> None:
+    """Quatre étapes, langage métier (recruteur)."""
+    labels = {
+        "fr": ["Recadrer\nla photo", "Nommer\nle défaut connu", "Signaler\nle jamais-vu", "Répondre\npar une API"],
+        "en": ["Crop\nthe frame", "Name the\nknown defect", "Flag what\nwas never seen", "Answer\nwith an API"],
+    }[lang]
+    fig, ax = plt.subplots(figsize=(10.2, 2.8))
+    fig.patch.set_facecolor(BG)
+    ax.set_facecolor(BG)
+    ax.axis("off")
+    _boxes_row(ax, labels, y=0.5, box_w=0.19, box_h=0.55)
+    _save(fig, f"architecture-plain-{lang}.png")
+
+
+def architecture_serve() -> None:
+    """Train vs serve — une figure, libellés code (FR/EN identiques)."""
+    fig, ax = plt.subplots(figsize=(10.4, 4.6))
+    fig.patch.set_facecolor(BG)
+    ax.set_facecolor(BG)
+    ax.axis("off")
+    ax.text(0.04, 0.82, "TRAIN", color=ACCENT, fontsize=12, fontweight="bold", transform=ax.transAxes)
+    _boxes_row(
+        ax,
+        ["raw PNG", "rotate+crop", "resnest50d\n+ PaDiM", "threshold.json"],
+        y=0.68,
+        box_w=0.18,
+        box_h=0.22,
+    )
+    ax.text(0.04, 0.38, "SERVE", color=ACCENT, fontsize=12, fontweight="bold", transform=ax.transAxes)
+    _boxes_row(
+        ax,
+        ["alarm\nbilling", "ONNX\n(+ Gaussian)", "Lambda\nimage", "Function URL"],
+        y=0.22,
+        box_w=0.18,
+        box_h=0.22,
+    )
+    _save(fig, "architecture-serve.png")
+
+
 if __name__ == "__main__":
     good_flagged()
     penalty()
     pwa_points()
     padim_class()
     class_counts()
+    architecture_plain("fr")
+    architecture_plain("en")
+    architecture_serve()

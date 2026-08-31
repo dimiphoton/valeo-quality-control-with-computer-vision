@@ -2,6 +2,8 @@
 
 ## [Non publié]
 
+- Decks : slide projet + schéma d'architecture (RH : 4 étapes métier ;
+  technique : train vs serve). Moins de graphes de coût côté recruteur.
 - GitHub Pages depuis `/docs` : copie des visuels sous `docs/pictures/`,
   index des 4 decks. Les liens README pointent vers github.io, pas le `.md`.
 - Présentations Marp recruteur / technique, FR et EN : seuil protège-GOOD,

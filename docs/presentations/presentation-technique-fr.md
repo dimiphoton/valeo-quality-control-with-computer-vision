@@ -9,10 +9,10 @@ paginate: true
 
 ![bg brightness:0.40](../pictures/presentations/photos/hero.jpg)
 
-# Comment fusionner
-# classifieur et PaDiM
-# quand le val n'a pas
-# de drift ?
+# Du recadrage à Lambda :
+# classer le connu,
+# détecter le drift,
+# au coût métier.
 
 Machine learning · Industrie / contrôle qualité · Python / PyTorch / ONNX / AWS
 
@@ -23,6 +23,21 @@ Valeo · ENS #157 · 8 278 images train
 <!-- _class: split -->
 
 ![bg left:46%](../pictures/presentations/photos/motivation.jpg)
+
+# On reproduit le
+# pipeline officiel,
+# puis on le sert.
+
+Challenge Valeo : six défauts nommés, un drift hors train.
+On calibre la fusion sur la matrice de coût, pas sur l'accuracy.
+
+**Livrable : `threshold.json` + API ONNX, sans PyTorch.**
+
+---
+
+<!-- _class: split -->
+
+![bg left:46%](../pictures/presentations/photos/hero.jpg)
 
 # GOOD → drift
 # coûte 10 000.
@@ -36,16 +51,16 @@ Un GOOD jeté comme inconnu : 10 000.
 
 <!-- _class: split -->
 
-![bg left:46%](../pictures/presentations/photos/hero.jpg)
+![bg left:46%](../pictures/presentations/photos/physique.jpg)
 
 # Qui consomme
 # le score.
 
 Le jury : PWA sur un test caché (2 soumissions / 24 h).
 
-Qualité usine : une API, image in, classe out.
+Qualité usine : POST une image, recevoir une classe.
 
-**Le livrable n'est pas un notebook. C'est un seuil exporté.**
+**Le notebook n'est pas le produit. L'API l'est.**
 
 ---
 
@@ -62,18 +77,26 @@ Au-dessus du seuil → drift.
 
 ---
 
+<!-- _class: chart -->
+
+Train d'un côté, inférence de l'autre. L'alarme billing avant la Lambda.
+
+![w:980](../pictures/presentations/architecture-serve.png)
+
+---
+
 <!-- _class: split -->
 
 ![bg left:46%](../pictures/presentations/photos/motivation.jpg)
 
-# Grain et
-# unités.
+# Grain : une image,
+# deux résolutions.
 
 PNG brut → rotate + crop selon `lib`.
 224 px classifieur, 128 px PaDiM.
 
-**On ne mélange pas le min-max du batch val
-avec une image unique en prod.**
+**En prod, le min-max PaDiM est figé.
+Un min-max par image donnerait toujours 1.**
 
 ---
 
@@ -95,9 +118,9 @@ Pas un AUC. Pas un F1 global.
 
 # Périmètre.
 
-On fait un benchmark honnête, puis une API ONNX.
+Benchmark honnête, export ONNX, plan CloudFormation.
 
-On n'est pas un leaderboard, ni anomalib, ni SAM.
+Pas de leaderboard, pas d'anomalib, pas de SAM.
 
 ---
 
@@ -149,30 +172,6 @@ Vingt faux drift, aucun GOOD.
 
 ---
 
-<!-- _class: split -->
-
-![bg left:40%](../pictures/presentations/photos/hero.jpg)
-
-# Même logique
-# sur le réentraînement.
-
-Officiel à 0,50 : 13 GOOD.
-Nous à 0,50 : 3 GOOD.
-Protège-GOOD : 0 des deux côtés.
-
----
-
-<!-- _class: dark -->
-
-# Pourquoi pas le max PWA.
-
-Il met le seuil à 1 et éteint PaDiM.
-
-Pourquoi pas un transformer : le pickle officiel est un ResNeSt-50d.
-On compare à ce qu'il y a, pas à un autre sujet.
-
----
-
 <!-- _class: dark -->
 
 # Où ça casse.
@@ -181,7 +180,7 @@ Labels test cachés — pas de score local sur le drift.
 
 Gaussienne PaDiM : pickle 1,2 Go, hors Lambda par défaut.
 
-Function URL publique, `--apply` jamais lancé sur un compte.
+Function URL publique ; `--apply` jamais lancé sur un compte.
 
 ---
 
